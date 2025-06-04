@@ -1,66 +1,121 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MeteMatik</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
       font-family: sans-serif;
+      text-align: center;
       padding: 1em;
-      max-width: 500px;
-      margin: auto;
     }
-    input[type="number"] {
-      width: 80px;
-      padding: 4px;
-      margin-left: 5px;
+    h1 {
+      font-size: 2em;
+    }
+    #bg, #delta, #trend, #time, #elapsed {
+      font-size: 1.5em;
+      margin: 0.5em 0;
+    }
+    #idf {
+      font-size: 1em;
+      width: 60px;
     }
   </style>
 </head>
 <body>
-  <h1>📱 MeteMatik</h1>
-
-  <p>Şeker: <span id="bg">Yükleniyor...</span></p>
-
-  <label for="idf">IDF değeri (50–120):</label>
-  <input type="number" id="idf" min="50" max="120" value="75" />
-  
-  <p>Bolus önerisi: <span id="bolus">-</span> ünite</p>
+  <h1>MeteMatik</h1>
+  <div id="bg">Şeker: ...</div>
+  <div id="delta">Delta: ...</div>
+  <div id="trend">Trend: ...</div>
+  <div id="time">Zaman: ...</div>
+  <div id="elapsed">Geçen süre: ...</div>
+  <div>
+    <label for="idf">IDF:</label>
+    <input type="number" id="idf" min="50" max="120" value="75" />
+  </div>
+  <div>Bolus önerisi: <span id="bolus">...</span> ünite</div>
 
   <script>
     const hedef = 120;
 
-    function veriCekVeHesapla() {
-  const idf = parseFloat(document.getElementById("idf").value);
+    function renkKodla(deger) {
+      if (deger < 70 || deger >= 250) return "red";
+      if (deger >= 180) return "orange";
+      return "green";
+    }
 
-  const timestamp = new Date().getTime(); // önbelleği kırmak için
-  const url = `https://api.allorigins.win/raw?url=${encodeURIComponent("https://metesensor-d65c04745f2a.herokuapp.com/api/v1/entries.json?count=1")}&_=${timestamp}`;
+    function trendOkunuDonustur(direction) {
+      switch (direction) {
+        case "DoubleUp": return "↑↑";
+        case "SingleUp": return "↑";
+        case "FortyFiveUp": return "↗";
+        case "Flat": return "→";
+        case "FortyFiveDown": return "↘";
+        case "SingleDown": return "↓";
+        case "DoubleDown": return "↓↓";
+        default: return "?";
+      }
+    }
 
-  fetch(url)
-    .then(response => {
-      if (!response.ok) throw new Error("Ağ hatası");
-      return response.json();
-    })
-    .then(data => {
-      const bg = data[0]?.sgv;
-      if (!bg) throw new Error("Veri okunamadı");
+    function veriCekVeGuncelle() {
+      const idf = parseFloat(document.getElementById("idf").value);
+      const timestamp = new Date().getTime();
+      const url = `https://api.allorigins.win/raw?url=${encodeURIComponent("https://metesensor-d65c04745f2a.herokuapp.com/api/v1/entries.json?count=2")}&_=${timestamp}`;
 
-      document.getElementById("bg").textContent = `${bg} mg/dL`;
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          const son = data[0];
+          const onceki = data[1];
+          const bg = son.sgv;
+          const delta = bg - (onceki?.sgv || bg);
+          const trend = trendOkunuDonustur(son.direction);
+          const zaman = new Date(son.date);
+          const simdi = new Date();
+          const gecenDakika = Math.floor((simdi - zaman) / 60000);
 
-      const bolus = bg > hedef ? (bg - hedef) / idf : 0;
-      document.getElementById("bolus").textContent = bolus.toFixed(1);
-    })
-    .catch(error => {
-      console.error("Hata:", error);
-      document.getElementById("bg").textContent = "Veri alınamadı";
-      document.getElementById("bolus").textContent = "-";
-    });
-}
+          // HTML güncelleme
+          const bgElem = document.getElementById("bg");
+          bgElem.textContent = `Şeker: ${bg} mg/dL`;
+          bgElem.style.color = renkKodla(bg);
 
-    document.getElementById("idf").addEventListener("input", veriCekVeHesapla);
-    veriCekVeHesapla(); // ilk yükleme
-    setInterval(veriCekVeHesapla, 60000); // her 60 saniyede bir yenile
+          const deltaElem = document.getElementById("delta");
+          deltaElem.textContent = `Delta: ${delta > 0 ? "+" : ""}${delta} mg/dL`;
+          deltaElem.style.color = renkKodla(bg);
+
+          const trendElem = document.getElementById("trend");
+          trendElem.textContent = `Trend: ${trend}`;
+          trendElem.style.color = renkKodla(bg);
+
+          document.getElementById("time").textContent =
+            "Zaman: " + zaman.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
+
+          document.getElementById("elapsed").textContent =
+            `Geçen süre: ${gecenDakika} dakika önce`;
+
+          const bolus = bg > hedef ? (bg - hedef) / idf : 0;
+          document.getElementById("bolus").textContent = bolus.toFixed(1);
+
+          // Sekme başlığı
+          document.title = `${bg} ${trend} ${delta > 0 ? "+" : ""}${delta}`;
+        })
+        .catch(err => {
+          console.error("Veri çekme hatası:", err);
+          document.getElementById("bg").textContent = "Şeker: Veri alınamadı";
+          document.getElementById("delta").textContent = "Delta: -";
+          document.getElementById("trend").textContent = "Trend: -";
+          document.getElementById("time").textContent = "Zaman: -";
+          document.getElementById("elapsed").textContent = "Geçen süre: -";
+          document.getElementById("bolus").textContent = "-";
+          document.title = "Veri alınamadı";
+        });
+    }
+
+    // İlk yüklemede çağır
+    veriCekVeGuncelle();
+    // Her 60 saniyede bir güncelle
+    setInterval(veriCekVeGuncelle, 60000);
   </script>
 </body>
 </html>
