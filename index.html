@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>MeteMatik</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: sans-serif; padding: 1em; background: #f4f4f4; }
+    .card { background: white; padding: 1em; margin: 1em 0; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    input, select { padding: 0.5em; margin-top: 0.5em; width: 100%; }
+  </style>
+</head>
+<body>
+
+<div class="card" id="sugar-section">
+  <h2>MeteMatik: <span id="bg">...</span></h2>
+  <p>Bolus Önerisi: <span id="bolus">...</span> ünite</p>
+</div>
+
+<div class="card">
+  <h3>Karbonhidrat Hesaplama</h3>
+  <select id="foodSelect"></select>
+  <input type="number" id="grams" placeholder="Kaç gram?">
+  <p>Karbonhidrat: <span id="carbResult">0</span> g</p>
+</div>
+
+<script>
+const IDF = 15; // IDF'yi sen belirleyeceksin
+const foodDB = {
+  "Elma": 12.4,
+  "Muz": 22.8,
+  "Yoğurt": 4.5
+};
+
+// Yiyecekleri listeye ekle
+const foodSelect = document.getElementById("foodSelect");
+for (const food in foodDB) {
+  const opt = document.createElement("option");
+  opt.value = food;
+  opt.textContent = food;
+  foodSelect.appendChild(opt);
+}
+
+// Karbonhidrat hesaplama
+document.getElementById("grams").addEventListener("input", () => {
+  const food = foodSelect.value;
+  const grams = parseFloat(document.getElementById("grams").value) || 0;
+  const carb = (foodDB[food] * grams) / 100;
+  document.getElementById("carbResult").textContent = carb.toFixed(1);
+});
+
+// Nightscout verisi çekme
+fetch("https://metesensor-d65c04745f2a.herokuapp.com/api/v1/entries.json?count=1")
+  .then(res => res.json())
+  .then(data => {
+    const bg = data[0].sgv;
+    document.getElementById("bg").textContent = `${bg} mg/dL`;
+    
+    // Bolus hesabı örneği
+    const hedef = 120;
+    const düzeltme = bg > hedef ? (bg - hedef) / IDF : 0;
+    document.getElementById("bolus").textContent = düzeltme.toFixed(1);
+  });
+</script>
+
+</body>
+</html>
