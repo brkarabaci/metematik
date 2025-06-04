@@ -55,9 +55,9 @@
         });
     }
 
-    // Sayfa yüklenince ve IDF değişince tekrar hesapla
     document.getElementById("idf").addEventListener("input", veriCekVeHesapla);
-    veriCekVeHesapla(); // ilk yüklemede çalıştır
+    veriCekVeHesapla(); // ilk yükleme
+    setInterval(veriCekVeHesapla, 60000); // her 60 saniyede bir yenile
   </script>
 </body>
 </html>
