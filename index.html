@@ -50,7 +50,7 @@ document.getElementById("grams").addEventListener("input", () => {
 });
 
 // Nightscout verisi çekme
-fetch("https://metesensor-d65c04745f2a.herokuapp.com/api/v1/entries.json?count=1")
+fetch("https://corsproxy.io/?https://metesensor-d65c04745f2a.herokuapp.com/api/v1/entries.json?count=1")
   .then(res => res.json())
   .then(data => {
     const bg = data[0].sgv;
