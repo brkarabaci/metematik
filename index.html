@@ -4,223 +4,171 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MeteMatik</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #f0f8ff, #e0f7fa);
-      margin: 0;
-      padding: 20px;
+      background: linear-gradient(to bottom, #f9f9f9, #e0f7fa);
+      color: #333;
       text-align: center;
+      padding: 1rem;
     }
-
     h1 {
-      font-family: 'Fredoka', cursive;
-      font-size: 3.5em;
-      color: #333;
-      margin-bottom: 0;
-    }
-
-    #current-time {
-      font-size: 2em;
-      margin-top: 5px;
-      color: #333;
-    }
-
-    #glucose-section {
-      font-size: 2.2em;
+      font-size: 3rem;
       font-weight: bold;
-      margin: 20px 0 5px;
+      color: #00796b;
+      margin-bottom: 0.5rem;
     }
-
+    #clock {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .sugar {
+      font-size: 2.5rem;
+      margin-top: 1rem;
+    }
+    .yellow { color: orange; }
     .red { color: red; }
-    .yellow { color: goldenrod; }
     .green { color: green; }
 
-    #delta-time {
-      font-size: 1em;
-      color: #666;
-      margin-bottom: 20px;
+    .carb-group {
+      display: inline-block;
+      width: 30%;
+      vertical-align: top;
+      margin-top: 1rem;
     }
-
-    label {
-      font-weight: bold;
+    .carb-group h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
     }
-
-    #idf {
-      font-size: 1em;
-      padding: 5px;
-      width: 60px;
-      margin-left: 5px;
-    }
-
-    #bolus-result {
-      font-size: 1.2em;
-      margin: 10px;
-    }
-
-    .carb-section {
-      max-width: 1000px;
-      margin: auto;
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      text-align: left;
-    }
-
-    .group {
-      flex: 1;
-      padding: 10px;
-      min-width: 280px;
-    }
-
-    .group-title {
-      font-size: 1.3em;
-      margin-bottom: 10px;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 5px;
-    }
-
     .carb-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 0;
+      margin: 0.5rem;
     }
-
-    .carb-item input {
-      width: 60px;
-      padding: 5px;
-      font-size: 1em;
-      margin-left: 10px;
-    }
-
-    #carb-result {
-      font-size: 2em;
-      font-weight: bold;
-      margin-top: 30px;
-      color: #333;
-    }
-
     input[type="number"] {
-      font-size: 1em;
+      width: 60px;
     }
-
+    #carbTotal {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+    .small {
+      font-size: 0.9rem;
+      color: #666;
+    }
   </style>
 </head>
 <body>
-
   <h1>MeteMatik</h1>
-  <div id="current-time">--:--</div>
+  <div id="clock"></div>
 
-  <div id="glucose-section">Şeker: Veri alınıyor...</div>
-  <div id="delta-time">Zaman bilgisi yükleniyor...</div>
+  <div id="sugarData" class="sugar">Şeker: -</div>
+  <div id="bolus">Bolus önerisi: -</div>
+  <div id="timeInfo" class="small"></div>
 
-  <label for="idf">IDF:</label>
-  <input type="number" id="idf" value="75" min="50" max="120" />
-  <div id="bolus-result">Bolus önerisi: - ünite</div>
+  <div style="margin:1rem;">
+    IDF: <input type="number" id="idf" value="75" min="50" max="120" />
+  </div>
 
-  <div class="carb-section">
-    <div class="group">
-      <div class="group-title">🍕 Pizza Grubu</div>
-      <div class="carb-item">Pide (0.4)<input type="number" data-ratio="0.4"/></div>
-      <div class="carb-item">Pişi (0.4)<input type="number" data-ratio="0.4"/></div>
+  <div>
+    <div class="carb-group">
+      <h3>🍕 Pizza</h3>
+      <div class="carb-item">Pide: <input type="number" data-carb="0.4" />g</div>
+      <div class="carb-item">Pişi: <input type="number" data-carb="0.4" />g</div>
     </div>
 
-    <div class="group">
-      <div class="group-title">🍭 Şeker Grubu</div>
-      <div class="carb-item">Pasta Pastaban (0.5)<input type="number" data-ratio="0.5"/></div>
-      <div class="carb-item">Puding 1 kase (15)<input type="number" data-ratio="15"/></div>
-      <div class="carb-item">Yaş Pasta (0.45)<input type="number" data-ratio="0.45"/></div>
-      <div class="carb-item">Karpuz (0.08)<input type="number" data-ratio="0.08"/></div>
+    <div class="carb-group">
+      <h3>🍬 Şeker</h3>
+      <div class="carb-item">Pasta pastaban: <input type="number" data-carb="0.5" />g</div>
+      <div class="carb-item">Puding (1 kase): <input type="number" data-carb="15" />g</div>
+      <div class="carb-item">Yaş pasta: <input type="number" data-carb="0.45" />g</div>
+      <div class="carb-item">Karpuz: <input type="number" data-carb="0.08" />g</div>
     </div>
 
-    <div class="group">
-      <div class="group-title">🌮 Taco Grubu</div>
-      <div class="carb-item">Ekmek (0.6)<input type="number" data-ratio="0.6"/></div>
-      <div class="carb-item">Mantı (0.35)<input type="number" data-ratio="0.35"/></div>
-      <div class="carb-item">Simit (0.45)<input type="number" data-ratio="0.45"/></div>
+    <div class="carb-group">
+      <h3>🌮 Taco</h3>
+      <div class="carb-item">Ekmek: <input type="number" data-carb="0.6" />g</div>
+      <div class="carb-item">Mantı: <input type="number" data-carb="0.35" />g</div>
+      <div class="carb-item">Simit: <input type="number" data-carb="0.45" />g</div>
     </div>
   </div>
 
-  <div id="carb-result">0 Karb</div>
+  <div id="carbTotal">Toplam Karbonhidrat: 0g</div>
 
   <script>
-    const NS_URL = "https://metesensor-d65c04745f2a.herokuapp.com/api/v1/entries.json?count=2";
+    const apiUrl = "https://metesensor-d65c04745f2a.herokuapp.com/api/v1/entries.json?count=2";
 
-    async function fetchGlucose() {
-      try {
-        const res = await fetch(NS_URL);
-        const data = await res.json();
-        if (!Array.isArray(data) || data.length < 2) throw new Error("Yetersiz veri");
-        const [latest, previous] = data;
-        const glucose = Math.round(latest.sgv);
-        const delta = Math.round(latest.sgv - previous.sgv);
-        const date = new Date(latest.date);
-        const now = new Date();
-        const minutesAgo = Math.floor((now - date) / 60000);
+    const trendArrows = {
+      "DoubleUp": "↑↑",
+      "SingleUp": "↑",
+      "FortyFiveUp": "↗",
+      "Flat": "→",
+      "FortyFiveDown": "↘",
+      "SingleDown": "↓",
+      "DoubleDown": "↓↓"
+    };
 
-        let color = "green";
-        if (glucose >= 250 || glucose < 70) color = "red";
-        else if (glucose >= 180) color = "yellow";
+    function fetchData() {
+      fetch(apiUrl)
+        .then(res => res.json())
+        .then(data => {
+          if (!data || data.length < 1) throw new Error("Veri alınamadı");
 
-        const trends = {
-          DoubleUp: "↑↑", SingleUp: "↑",
-          FortyFiveUp: "↗", Flat: "→",
-          FortyFiveDown: "↘", SingleDown: "↓",
-          DoubleDown: "↓↓"
-        };
-        const trendArrow = trends[latest.direction] || "?";
+          const [latest, previous] = data;
+          const sugar = Math.round(latest.sgv);
+          const previousSugar = previous ? previous.sgv : sugar;
+          const delta = sugar - previousSugar;
+          const trend = trendArrows[latest.direction] || "";
+          const colorClass = sugar >= 250 || sugar < 70 ? 'red' : sugar >= 180 ? 'yellow' : 'green';
 
-        document.getElementById("glucose-section").innerHTML =
-          `<span class="${color}">${glucose} ${trendArrow} (${delta >= 0 ? "+" : ""}${delta})</span>`;
+          const display = `${sugar} ${trend} (${delta >= 0 ? '+' : ''}${delta})`;
+          document.title = display;
 
-        const saat = date.toLocaleTimeString("tr-TR", { hour: '2-digit', minute: '2-digit' });
-        document.getElementById("delta-time").innerText =
-          `${minutesAgo} dakika önce (${saat})`;
+          document.getElementById("sugarData").innerHTML = `<span class="${colorClass}">${sugar} ${trend}</span>`;
+          const idf = parseFloat(document.getElementById("idf").value || 75);
+          const bolus = Math.round((delta > 0 ? (sugar - 120) / idf : 0) * 10) / 10;
+          document.getElementById("bolus").innerText = `Bolus önerisi: ${bolus > 0 ? bolus : 0} ünite`;
 
-        const idf = parseFloat(document.getElementById("idf").value);
-        const bolus = Math.max(0, ((glucose - 100) / idf)).toFixed(1);
-        document.getElementById("bolus-result").innerText = `Bolus önerisi: ${bolus} ünite`;
-
-        document.title = `${glucose} ${trendArrow} (${delta >= 0 ? "+" : ""}${delta})`;
-
-      } catch (e) {
-        document.getElementById("glucose-section").innerText = "Şeker: Veri alınamadı";
-        document.getElementById("bolus-result").innerText = "Bolus önerisi: - ünite";
-        document.title = "MeteMatik";
-      }
-    }
-
-    function calculateCarbs() {
-      const inputs = document.querySelectorAll('.carb-item input');
-      let total = 0;
-      inputs.forEach(input => {
-        const gram = parseFloat(input.value);
-        const ratio = parseFloat(input.dataset.ratio);
-        if (!isNaN(gram)) {
-          total += ratio * gram;
-        }
-      });
-      document.getElementById("carb-result").innerText = `${total.toFixed(1)} Karb`;
+          const measureTime = new Date(latest.date);
+          const now = new Date();
+          const minsAgo = Math.floor((now - measureTime) / 60000);
+          const h = measureTime.getHours().toString().padStart(2, "0");
+          const m = measureTime.getMinutes().toString().padStart(2, "0");
+          document.getElementById("timeInfo").innerText = `${minsAgo} dakika önce ${h}:${m}`;
+        })
+        .catch(() => {
+          document.getElementById("sugarData").innerText = "Şeker: Veri alınamadı";
+          document.getElementById("bolus").innerText = "Bolus önerisi: -";
+        });
     }
 
     function updateClock() {
       const now = new Date();
-      const timeStr = now.toLocaleTimeString("tr-TR", { hour: '2-digit', minute: '2-digit' });
-      document.getElementById("current-time").innerText = timeStr;
+      const h = now.getHours().toString().padStart(2, "0");
+      const m = now.getMinutes().toString().padStart(2, "0");
+      document.getElementById("clock").innerText = `${h}:${m}`;
     }
 
-    document.querySelectorAll('.carb-item input').forEach(input => {
+    function calculateCarbs() {
+      const inputs = document.querySelectorAll('input[data-carb]');
+      let total = 0;
+      inputs.forEach(input => {
+        const g = parseFloat(input.value || 0);
+        const factor = parseFloat(input.dataset.carb);
+        total += g * factor;
+      });
+      document.getElementById("carbTotal").innerText = `Toplam Karbonhidrat: ${Math.round(total)}g`;
+    }
+
+    document.querySelectorAll('input[data-carb]').forEach(input => {
       input.addEventListener('input', calculateCarbs);
     });
 
-    document.getElementById("idf").addEventListener('input', fetchGlucose);
+    document.getElementById("idf").addEventListener('input', fetchData);
 
-    setInterval(fetchGlucose, 20000);
-    setInterval(updateClock, 1000);
-    fetchGlucose();
     updateClock();
+    fetchData();
+    setInterval(updateClock, 30000);
+    setInterval(fetchData, 30000);
   </script>
 </body>
 </html>
