@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MeteMatik</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
   body {
     font-family: Arial, sans-serif;
     background: linear-gradient(135deg, #e0f7fa, #80deea);
@@ -13,21 +14,24 @@
     display: flex; flex-direction: column; align-items: center;
   }
   h1 {
-    font-size: 4rem;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'Comic Neue', cursive, sans-serif;
+    font-size: 6rem;
     margin-bottom: 5px;
+    user-select: none;
+    color: #00796b;
   }
   #time {
-    font-size: 2rem;
-    margin-bottom: 30px;
+    font-size: 3rem;
     font-weight: bold;
+    margin-bottom: 30px;
   }
   #sugar-container {
-    font-size: 2rem;
+    font-size: 2.5rem;
     margin-bottom: 20px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
+    user-select: none;
   }
   #sugar-value {
     font-weight: bold;
@@ -36,70 +40,82 @@
     font-weight: bold;
   }
   #trend-arrow {
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
   #last-measurement {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     margin-bottom: 30px;
     color: #00695c;
+    user-select: none;
   }
-  /* Karbonhidrat hesaplayıcı */
+
+  /* Karbonhidrat hesaplayıcı stilleri */
   #carb-calculator {
     display: flex;
-    gap: 40px;
     justify-content: center;
-    flex-wrap: wrap;
+    gap: 40px;
+    width: 100%;
     max-width: 900px;
     margin-top: 40px;
+    user-select: none;
   }
   .food-group {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-  }
-  .food-group label {
-    font-weight: 600;
-    margin-bottom: 5px;
+    gap: 12px;
   }
   .food-item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+  }
+  .food-label {
+    min-width: 110px;
   }
   .food-symbol {
     font-size: 1.5rem;
   }
   input[type="number"] {
-    width: 60px;
+    width: 55px;
     padding: 4px;
     font-size: 1rem;
+    border: 1px solid #004d40;
+    border-radius: 4px;
   }
-  #total-carb {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-top: 30px;
-    text-align: center;
-    color: #004d40;
-  }
-  button {
-    margin-top: 20px;
+  #calculate-btn {
+    margin-top: 25px;
+    padding: 10px 20px;
     font-size: 1.2rem;
-    padding: 8px 18px;
-    border: none;
     background-color: #00796b;
     color: white;
-    border-radius: 5px;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
+    user-select: none;
   }
-  button:hover {
+  #calculate-btn:hover {
     background-color: #004d40;
+  }
+  #carb-result {
+    margin-top: 30px;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #00796b;
+    user-select: none;
+  }
+  /* Responsive */
+  @media (max-width: 800px) {
+    #carb-calculator {
+      flex-direction: column;
+      align-items: center;
+    }
   }
 </style>
 </head>
 <body>
 
 <h1>MeteMatik</h1>
-<div id="time"></div>
+<div id="time">--:--</div>
 
 <div id="sugar-container">
   <div id="sugar-value">--</div>
@@ -107,66 +123,31 @@
   <div id="delta"></div>
 </div>
 
-<div id="last-measurement"></div>
+<div id="last-measurement">Veri alınamadı</div>
 
+<!-- Karbonhidrat hesaplayıcı -->
 <div id="carb-calculator">
   <div class="food-group" id="pizza-group">
-    <label>🍕</label>
-    <div class="food-item"><span>Pide</span><input type="number" min="0" step="1" id="pide" placeholder="gram" /></div>
-    <div class="food-item"><span>Pişi</span><input type="number" min="0" step="1" id="pisi" placeholder="gram" /></div>
+    <div class="food-item"><span class="food-label">Pide</span><span class="food-symbol">🍕</span> <input type="number" min="0" step="1" id="pide" placeholder="g" /></div>
+    <div class="food-item"><span class="food-label">Pişi</span><span class="food-symbol">🍕</span> <input type="number" min="0" step="1" id="pisi" placeholder="g" /></div>
   </div>
   <div class="food-group" id="sugar-group">
-    <label>🍭</label>
-    <div class="food-item"><span>Pasta pastaban</span><input type="number" min="0" step="1" id="pasta" placeholder="gram" /></div>
-    <div class="food-item"><span>Puding (1 kase)</span><input type="number" min="0" step="1" id="puding" placeholder="adet" /></div>
-    <div class="food-item"><span>Yaş pasta</span><input type="number" min="0" step="1" id="yas_pasta" placeholder="gram" /></div>
-    <div class="food-item"><span>Karpuz</span><input type="number" min="0" step="1" id="karpuz" placeholder="gram" /></div>
+    <div class="food-item"><span class="food-label">Pasta Pastaban</span><span class="food-symbol">🍭</span> <input type="number" min="0" step="1" id="pasta" placeholder="g" /></div>
+    <div class="food-item"><span class="food-label">Puding (1 kase)</span><span class="food-symbol">🍭</span> <input type="number" min="0" step="1" id="puding" placeholder="g" /></div>
+    <div class="food-item"><span class="food-label">Yaş Pasta</span><span class="food-symbol">🍭</span> <input type="number" min="0" step="1" id="yasPasta" placeholder="g" /></div>
+    <div class="food-item"><span class="food-label">Karpuz</span><span class="food-symbol">🍭</span> <input type="number" min="0" step="1" id="karpuz" placeholder="g" /></div>
   </div>
   <div class="food-group" id="taco-group">
-    <label>🌮</label>
-    <div class="food-item"><span>Ekmek</span><input type="number" min="0" step="1" id="ekmek" placeholder="gram" /></div>
-    <div class="food-item"><span>Mantı</span><input type="number" min="0" step="1" id="manti" placeholder="gram" /></div>
-    <div class="food-item"><span>Simit</span><input type="number" min="0" step="1" id="simit" placeholder="gram" /></div>
+    <div class="food-item"><span class="food-label">Ekmek</span><span class="food-symbol">🌮</span> <input type="number" min="0" step="1" id="ekmek" placeholder="g" /></div>
+    <div class="food-item"><span class="food-label">Mantı</span><span class="food-symbol">🌮</span> <input type="number" min="0" step="1" id="manti" placeholder="g" /></div>
+    <div class="food-item"><span class="food-label">Simit</span><span class="food-symbol">🌮</span> <input type="number" min="0" step="1" id="simit" placeholder="g" /></div>
   </div>
 </div>
-
-<button id="calc-btn">Karbonhidrat Hesapla</button>
-<div id="total-carb">0</div>
+<button id="calculate-btn">Karbonhidrat Hesapla</button>
+<div id="carb-result">Toplam Karbonhidrat: 0</div>
 
 <script>
-  // Karbonhidrat değerleri (1 gram için)
-  const carbValues = {
-    pide: 0.4,
-    pisi: 0.4,
-    pasta: 0.5,
-    puding: 15, // 1 kase puding için
-    yas_pasta: 0.45,
-    karpuz: 0.08,
-    ekmek: 0.6,
-    manti: 0.35,
-    simit: 0.45
-  };
-
-  // Fonksiyon: Karbonhidrat hesapla ve sonucu yuvarla
-  function calculateCarbs() {
-    let total = 0;
-    total += (parseFloat(document.getElementById('pide').value) || 0) * carbValues.pide;
-    total += (parseFloat(document.getElementById('pisi').value) || 0) * carbValues.pisi;
-    total += (parseFloat(document.getElementById('pasta').value) || 0) * carbValues.pasta;
-    total += (parseFloat(document.getElementById('puding').value) || 0) * carbValues.puding;
-    total += (parseFloat(document.getElementById('yas_pasta').value) || 0) * carbValues.yas_pasta;
-    total += (parseFloat(document.getElementById('karpuz').value) || 0) * carbValues.karpuz;
-    total += (parseFloat(document.getElementById('ekmek').value) || 0) * carbValues.ekmek;
-    total += (parseFloat(document.getElementById('manti').value) || 0) * carbValues.manti;
-    total += (parseFloat(document.getElementById('simit').value) || 0) * carbValues.simit;
-
-    total = Math.round(total);
-    document.getElementById('total-carb').textContent = total;
-  }
-
-  document.getElementById('calc-btn').addEventListener('click', calculateCarbs);
-
-  // Gerçek zaman saat güncelleme
+  // Saat gösterimi
   function updateTime() {
     const now = new Date();
     const h = String(now.getHours()).padStart(2, '0');
@@ -176,7 +157,7 @@
   setInterval(updateTime, 1000);
   updateTime();
 
-  // Trend okları Unicode olarak sade gösterim
+  // Şeker verisi ve trend oklar
   const trendArrows = {
     "DoubleUp": "⬆⬆",
     "SingleUp": "⬆",
@@ -187,27 +168,19 @@
     "DoubleDown": "⬇⬇",
   };
 
-  // Nightscout veri çekme URL, CORS proxy ile (proxy varsa)
-  const apiUrl = "https://cors-anywhere.herokuapp.com/https://metesensor-d65c04745f2a.herokuapp.com/api/v1/entries.json?count=2";
-
-  // Veriyi çek ve göster
   async function fetchAndDisplayData() {
     try {
-      const res = await fetch(apiUrl);
-      if (!res.ok) throw new Error('API yanıtı hatalı');
+      const res = await fetch("https://api.allorigins.win/raw?url=https://metesensor-d65c04745f2a.herokuapp.com/api/v1/entries.json?count=2");
+      if (!res.ok) throw new Error('API hatası');
       const data = await res.json();
 
-      if (!data || data.length === 0) {
-        throw new Error('Veri yok');
-      }
+      if (!data || data.length === 0) throw new Error('Veri yok');
 
-      // Son ölçüm
       const latest = data[0];
-      // Bir önceki ölçüm
-      const previous = data[1];
+      const previous = data[1] || latest;
 
       const sugar = latest.sgv;
-      const previousSugar = previous ? previous.sgv : sugar;
+      const previousSugar = previous.sgv;
       const delta = sugar - previousSugar;
       const deltaSign = delta > 0 ? "+" : "";
       const deltaDisplay = `${deltaSign}${delta}`;
@@ -224,12 +197,12 @@
       const elapsedStr = `${diffMin} dakika önce ${measureTimeStr}`;
 
       // Şeker renkleri
-      let sugarColor = "#2e7d32"; // yeşil varsayılan
+      let sugarColor = "#2e7d32"; // yeşil
       if (sugar >= 250) sugarColor = "#d32f2f"; // kırmızı
       else if (sugar >= 180) sugarColor = "#fbc02d"; // sarı
       else if (sugar < 70) sugarColor = "#d32f2f"; // kırmızı
 
-      // Güncelle DOM
+      // DOM güncelle
       const sugarEl = document.getElementById("sugar-value");
       sugarEl.textContent = sugar;
       sugarEl.style.color = sugarColor;
@@ -246,6 +219,7 @@
 
       // Sekme başlığına şeker, ok ve delta yaz
       document.title = `${sugar} ${trendArrow} (${deltaDisplay})`;
+
     } catch (e) {
       console.error("Veri çekme hatası:", e);
       document.getElementById("sugar-value").textContent = "--";
@@ -257,8 +231,40 @@
   }
 
   fetchAndDisplayData();
-  setInterval(fetchAndDisplayData, 30000); // 30 saniyede bir yenile
+  setInterval(fetchAndDisplayData, 30000);
 
+  // Karbonhidrat değerleri (1 grama karşılık)
+  const carbValues = {
+    pide: 0.4,
+    pisi: 0.4,
+    pasta: 0.5,
+    puding: 15,
+    yasPasta: 0.45,
+    karpuz: 0.08,
+    ekmek: 0.6,
+    manti: 0.35,
+    simit: 0.45,
+  };
+
+  function hesaplaKarbonhidrat() {
+    let toplam = 0;
+    for (const [id, val] of Object.entries(carbValues)) {
+      const input = document.getElementById(id);
+      const gram = input ? parseFloat(input.value) : 0;
+      if (!gram || gram < 0) continue;
+      toplam += gram * val;
+    }
+    toplam = Math.round(toplam);
+    document.getElementById("carb-result").textContent = `Toplam Karbonhidrat: ${toplam}`;
+  }
+
+  document.getElementById("calculate-btn").addEventListener("click", hesaplaKarbonhidrat);
+
+  // Karbonhidratı otomatik hesapla, input değiştikçe
+  document.querySelectorAll("#carb-calculator input").forEach(input => {
+    input.addEventListener("input", hesaplaKarbonhidrat);
+  });
 </script>
+
 </body>
 </html>
