@@ -15,18 +15,18 @@
   }
   h1 {
     font-family: 'Comic Neue', cursive, sans-serif;
-    font-size: 3.5rem;  /* küçültüldü */
+    font-size: 3.5rem;
     margin-bottom: 5px;
     user-select: none;
     color: #00796b;
   }
   #time {
-    font-size: 2.5rem; /* biraz küçültüldü */
+    font-size: 2.5rem;
     font-weight: bold;
     margin-bottom: 30px;
   }
   #sugar-container {
-    font-size: 2rem; /* biraz küçültüldü */
+    font-size: 2rem;
     margin-bottom: 20px;
     display: flex;
     align-items: center;
@@ -40,7 +40,7 @@
     font-weight: bold;
   }
   #trend-arrow {
-    font-size: 1.7rem; /* biraz küçültüldü */
+    font-size: 1.7rem;
   }
   #last-measurement {
     font-size: 1.2rem;
@@ -58,7 +58,7 @@
     max-width: 900px;
     margin-top: 10px;
     user-select: none;
-    flex-wrap: wrap; /* mobilde alt alta */
+    flex-wrap: wrap;
   }
   .food-group {
     display: flex;
@@ -85,12 +85,17 @@
   .food-symbol {
     font-size: 1.5rem;
   }
-  input[type="number"] {
-    width: 55px;
+  select, input[type="number"] {
     padding: 4px;
     font-size: 1rem;
     border: 1px solid #004d40;
     border-radius: 4px;
+  }
+  select {
+    width: 110px;
+  }
+  input[type="number"] {
+    width: 55px;
   }
 
   #carb-result {
@@ -128,23 +133,44 @@
 <!-- Karbonhidrat hesaplayıcı -->
 <div id="carb-result">Karbonhidrat: 0</div>
 <div id="carb-calculator">
+  <!-- Pizza Grubu -->
   <div class="food-group" id="pizza-group">
     <div class="food-group-label">🍕 Pizza</div>
-    <div class="food-item"><span class="food-label">Pide</span><span class="food-symbol">🍕</span> <input type="number" min="0" step="1" id="pide" placeholder="g" /></div>
-    <div class="food-item"><span class="food-label">Pişi</span><span class="food-symbol">🍕</span> <input type="number" min="0" step="1" id="pisi" placeholder="g" /></div>
+    <div class="food-item">
+      <select id="pizza-select">
+        <option value="" selected disabled>Ürün seç</option>
+        <option value="pide">Pide</option>
+        <option value="pisi">Pişi</option>
+      </select>
+      <input type="number" min="0" step="1" id="pizza-gram" placeholder="g" />
+    </div>
   </div>
+  <!-- Şeker Grubu -->
   <div class="food-group" id="sugar-group">
     <div class="food-group-label">🍭 Şeker</div>
-    <div class="food-item"><span class="food-label">Pasta Pastaban</span><span class="food-symbol">🍭</span> <input type="number" min="0" step="1" id="pasta" placeholder="g" /></div>
-    <div class="food-item"><span class="food-label">Puding (1 kase)</span><span class="food-symbol">🍭</span> <input type="number" min="0" step="1" id="puding" placeholder="g" /></div>
-    <div class="food-item"><span class="food-label">Yaş Pasta</span><span class="food-symbol">🍭</span> <input type="number" min="0" step="1" id="yasPasta" placeholder="g" /></div>
-    <div class="food-item"><span class="food-label">Karpuz</span><span class="food-symbol">🍭</span> <input type="number" min="0" step="1" id="karpuz" placeholder="g" /></div>
+    <div class="food-item">
+      <select id="sugar-select">
+        <option value="" selected disabled>Ürün seç</option>
+        <option value="pasta">Pasta Pastaban</option>
+        <option value="puding">Puding (1 kase)</option>
+        <option value="yasPasta">Yaş Pasta</option>
+        <option value="karpuz">Karpuz</option>
+      </select>
+      <input type="number" min="0" step="1" id="sugar-gram" placeholder="g" />
+    </div>
   </div>
+  <!-- Taco Grubu -->
   <div class="food-group" id="taco-group">
     <div class="food-group-label">🌮 Taco</div>
-    <div class="food-item"><span class="food-label">Ekmek</span><span class="food-symbol">🌮</span> <input type="number" min="0" step="1" id="ekmek" placeholder="g" /></div>
-    <div class="food-item"><span class="food-label">Mantı</span><span class="food-symbol">🌮</span> <input type="number" min="0" step="1" id="manti" placeholder="g" /></div>
-    <div class="food-item"><span class="food-label">Simit</span><span class="food-symbol">🌮</span> <input type="number" min="0" step="1" id="simit" placeholder="g" /></div>
+    <div class="food-item">
+      <select id="taco-select">
+        <option value="" selected disabled>Ürün seç</option>
+        <option value="ekmek">Ekmek</option>
+        <option value="manti">Mantı</option>
+        <option value="simit">Simit</option>
+      </select>
+      <input type="number" min="0" step="1" id="taco-gram" placeholder="g" />
+    </div>
   </div>
 </div>
 
@@ -159,7 +185,7 @@
   setInterval(updateTime, 1000);
   updateTime();
 
-  // Şeker verisi ve trend oklar
+  // Trend oklar
   const trendArrows = {
     "DoubleUp": "⬆⬆",
     "SingleUp": "⬆",
@@ -203,15 +229,19 @@
       document.getElementById("trend-arrow").textContent = trendArrow;
       document.getElementById("last-measurement").textContent = `${measureTimeStr} - ${elapsedStr}`;
 
+      // Sekme başlığına yaz
+      document.title = `${sugar} ${trendArrow} (${deltaDisplay})`;
+
     } catch (error) {
       document.getElementById("last-measurement").textContent = "Veri alınamadı";
+      document.title = "MeteMatik";
     }
   }
 
-  setInterval(fetchAndDisplayData, 60000);
+  setInterval(fetchAndDisplayData, 30000);
   fetchAndDisplayData();
 
-  // Karbonhidrat hesaplama
+  // Karbonhidrat değerleri
   const carbValues = {
     ekmek: 0.6,
     pide: 0.4,
@@ -226,16 +256,37 @@
 
   function calculateCarbs() {
     let total = 0;
-    for (const [id, factor] of Object.entries(carbValues)) {
-      const val = parseFloat(document.getElementById(id).value);
-      if (!isNaN(val) && val > 0) total += val * factor;
+
+    // Pizza grup
+    const pizzaProduct = document.getElementById('pizza-select').value;
+    const pizzaGram = parseFloat(document.getElementById('pizza-gram').value);
+    if (pizzaProduct && !isNaN(pizzaGram) && pizzaGram > 0) {
+      total += pizzaGram * carbValues[pizzaProduct];
     }
-    document.getElementById('carb-result').textContent = `Karbonhidrat: ${total.toFixed(2)}`;
+
+    // Şeker grup
+    const sugarProduct = document.getElementById('sugar-select').value;
+    const sugarGram = parseFloat(document.getElementById('sugar-gram').value);
+    if (sugarProduct && !isNaN(sugarGram) && sugarGram > 0) {
+      total += sugarGram * carbValues[sugarProduct];
+    }
+
+    // Taco grup
+    const tacoProduct = document.getElementById('taco-select').value;
+    const tacoGram = parseFloat(document.getElementById('taco-gram').value);
+    if (tacoProduct && !isNaN(tacoGram) && tacoGram > 0) {
+      total += tacoGram * carbValues[tacoProduct];
+    }
+
+    // En yakın tam sayıya yuvarla
+    total = Math.round(total);
+
+    document.getElementById('carb-result').textContent = `Karbonhidrat: ${total}`;
   }
 
-  // Tüm inputlara event ekle
-  document.querySelectorAll('#carb-calculator input').forEach(input => {
-    input.addEventListener('input', calculateCarbs);
+  // Input ve selectlara event ekle
+  ['pizza-select','pizza-gram','sugar-select','sugar-gram','taco-select','taco-gram'].forEach(id => {
+    document.getElementById(id).addEventListener('input', calculateCarbs);
   });
 
 </script>
