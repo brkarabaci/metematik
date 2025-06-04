@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MeteMatik</title>
   <style>
     body {
@@ -13,13 +13,28 @@
     h1 {
       font-size: 2em;
     }
-    #bg, #delta, #trend, #time, #elapsed {
-      font-size: 1.5em;
+    #bg, #delta, #time, #elapsed {
+      font-size: 1.4em;
       margin: 0.5em 0;
     }
     #idf {
       font-size: 1em;
       width: 60px;
+    }
+    .food-input {
+      margin: 0.5em 0;
+    }
+    .emoji {
+      font-size: 1.2em;
+      margin-left: 5px;
+    }
+    .karb-result {
+      font-weight: bold;
+      margin-top: 1em;
+      font-size: 1.2em;
+    }
+    input[type="number"] {
+      width: 80px;
     }
   </style>
 </head>
@@ -27,7 +42,6 @@
   <h1>MeteMatik</h1>
   <div id="bg">Şeker: ...</div>
   <div id="delta">Delta: ...</div>
-  <div id="trend">Trend: ...</div>
   <div id="time">Zaman: ...</div>
   <div id="elapsed">Geçen süre: ...</div>
   <div>
@@ -36,8 +50,47 @@
   </div>
   <div>Bolus önerisi: <span id="bolus">...</span> ünite</div>
 
+  <hr />
+  <h2>🍽️ Karbonhidrat Hesaplayıcı</h2>
+  <div id="food-list"></div>
+  <div class="karb-result" id="karb-result"></div>
+
   <script>
     const hedef = 120;
+
+    const yiyecekler = [
+      { ad: "ekmek", oran: 0.6, sembol: "🌮" },
+      { ad: "pide", oran: 0.4, sembol: "🍕" },
+      { ad: "pasta pastaban", oran: 0.5, sembol: "🍭" },
+      { ad: "mantı", oran: 0.35, sembol: "🌮" },
+      { ad: "puding (1 kase)", oran: 15, sembol: "🍭" },
+      { ad: "yaş pasta", oran: 0.45, sembol: "🍭" },
+      { ad: "simit", oran: 0.45, sembol: "🌮" },
+      { ad: "karpuz", oran: 0.08, sembol: "🍭" },
+      { ad: "pişi", oran: 0.4, sembol: "🍕" },
+    ];
+
+    // Karb hesaplayıcı arayüzü
+    const foodListDiv = document.getElementById("food-list");
+    yiyecekler.forEach((item, i) => {
+      const div = document.createElement("div");
+      div.className = "food-input";
+      div.innerHTML = `
+        <label>${item.ad} <span class="emoji">${item.sembol}</span>: </label>
+        <input type="number" id="g-${i}" min="0" placeholder="gram">
+      `;
+      foodListDiv.appendChild(div);
+    });
+
+    foodListDiv.addEventListener("input", () => {
+      let toplamKarb = 0;
+      yiyecekler.forEach((item, i) => {
+        const gram = parseFloat(document.getElementById(`g-${i}`).value) || 0;
+        toplamKarb += gram * item.oran;
+      });
+      document.getElementById("karb-result").textContent =
+        `Toplam Karbonhidrat: ${toplamKarb.toFixed(1)} g`;
+    });
 
     function renkKodla(deger) {
       if (deger < 70 || deger >= 250) return "red";
@@ -73,26 +126,24 @@
           const trend = trendOkunuDonustur(son.direction);
           const zaman = new Date(son.date);
           const simdi = new Date();
-          const gecenDakika = Math.floor((simdi - zaman) / 60000);
+          const farkMs = simdi - zaman;
+          const gecenDakika = Math.floor(farkMs / 60000);
+          const saatDakika = `${Math.floor(gecenDakika / 60)}s ${gecenDakika % 60}d`;
 
-          // HTML güncelleme
+          // Şeker + Trend
           const bgElem = document.getElementById("bg");
-          bgElem.textContent = `Şeker: ${bg} mg/dL`;
+          bgElem.textContent = `Şeker: ${bg} ${trend}`;
           bgElem.style.color = renkKodla(bg);
 
           const deltaElem = document.getElementById("delta");
-          deltaElem.textContent = `Delta: ${delta > 0 ? "+" : ""}${delta} mg/dL`;
+          deltaElem.textContent = `Delta: ${delta > 0 ? "+" : ""}${delta}`;
           deltaElem.style.color = renkKodla(bg);
-
-          const trendElem = document.getElementById("trend");
-          trendElem.textContent = `Trend: ${trend}`;
-          trendElem.style.color = renkKodla(bg);
 
           document.getElementById("time").textContent =
             "Zaman: " + zaman.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
 
           document.getElementById("elapsed").textContent =
-            `Geçen süre: ${gecenDakika} dakika önce`;
+            `Geçen süre: ${gecenDakika} dakika önce (${zaman.getHours()}:${String(zaman.getMinutes()).padStart(2, "0")})`;
 
           const bolus = bg > hedef ? (bg - hedef) / idf : 0;
           document.getElementById("bolus").textContent = bolus.toFixed(1);
@@ -104,7 +155,6 @@
           console.error("Veri çekme hatası:", err);
           document.getElementById("bg").textContent = "Şeker: Veri alınamadı";
           document.getElementById("delta").textContent = "Delta: -";
-          document.getElementById("trend").textContent = "Trend: -";
           document.getElementById("time").textContent = "Zaman: -";
           document.getElementById("elapsed").textContent = "Geçen süre: -";
           document.getElementById("bolus").textContent = "-";
@@ -112,9 +162,7 @@
         });
     }
 
-    // İlk yüklemede çağır
     veriCekVeGuncelle();
-    // Her 60 saniyede bir güncelle
     setInterval(veriCekVeGuncelle, 60000);
   </script>
 </body>
