@@ -32,28 +32,31 @@
     const hedef = 120;
 
     function veriCekVeHesapla() {
-      const idf = parseFloat(document.getElementById("idf").value);
+  const idf = parseFloat(document.getElementById("idf").value);
 
-      fetch("https://api.allorigins.win/raw?url=https://metesensor-d65c04745f2a.herokuapp.com/api/v1/entries.json?count=1")
-        .then(response => {
-          if (!response.ok) throw new Error("Ağ hatası");
-          return response.json();
-        })
-        .then(data => {
-          const bg = data[0]?.sgv;
-          if (!bg) throw new Error("Veri okunamadı");
+  const timestamp = new Date().getTime(); // önbelleği kırmak için
+  const url = `https://api.allorigins.win/raw?url=${encodeURIComponent("https://metesensor-d65c04745f2a.herokuapp.com/api/v1/entries.json?count=1")}&_=${timestamp}`;
 
-          document.getElementById("bg").textContent = `${bg} mg/dL`;
+  fetch(url)
+    .then(response => {
+      if (!response.ok) throw new Error("Ağ hatası");
+      return response.json();
+    })
+    .then(data => {
+      const bg = data[0]?.sgv;
+      if (!bg) throw new Error("Veri okunamadı");
 
-          const bolus = bg > hedef ? (bg - hedef) / idf : 0;
-          document.getElementById("bolus").textContent = bolus.toFixed(1);
-        })
-        .catch(error => {
-          console.error("Hata:", error);
-          document.getElementById("bg").textContent = "Veri alınamadı";
-          document.getElementById("bolus").textContent = "-";
-        });
-    }
+      document.getElementById("bg").textContent = `${bg} mg/dL`;
+
+      const bolus = bg > hedef ? (bg - hedef) / idf : 0;
+      document.getElementById("bolus").textContent = bolus.toFixed(1);
+    })
+    .catch(error => {
+      console.error("Hata:", error);
+      document.getElementById("bg").textContent = "Veri alınamadı";
+      document.getElementById("bolus").textContent = "-";
+    });
+}
 
     document.getElementById("idf").addEventListener("input", veriCekVeHesapla);
     veriCekVeHesapla(); // ilk yükleme
