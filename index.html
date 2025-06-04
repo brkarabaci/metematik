@@ -102,12 +102,6 @@
       color: #333;
     }
 
-    button {
-      padding: 8px 16px;
-      font-size: 1em;
-      margin-top: 10px;
-    }
-
     input[type="number"] {
       font-size: 1em;
     }
@@ -127,7 +121,6 @@
   <div id="bolus-result">Bolus önerisi: - ünite</div>
 
   <div class="carb-section">
-
     <div class="group">
       <div class="group-title">🍕 Pizza Grubu</div>
       <div class="carb-item">Pide (0.4)<input type="number" data-ratio="0.4"/></div>
@@ -148,10 +141,8 @@
       <div class="carb-item">Mantı (0.35)<input type="number" data-ratio="0.35"/></div>
       <div class="carb-item">Simit (0.45)<input type="number" data-ratio="0.45"/></div>
     </div>
-
   </div>
 
-  <button onclick="calculateCarbs()">Karbonhidrat Hesapla</button>
   <div id="carb-result">0 Karb</div>
 
   <script>
@@ -161,6 +152,7 @@
       try {
         const res = await fetch(NS_URL);
         const data = await res.json();
+        if (!Array.isArray(data) || data.length < 2) throw new Error("Yetersiz veri");
         const [latest, previous] = data;
         const glucose = Math.round(latest.sgv);
         const delta = Math.round(latest.sgv - previous.sgv);
@@ -168,12 +160,10 @@
         const now = new Date();
         const minutesAgo = Math.floor((now - date) / 60000);
 
-        // renk seçimi
         let color = "green";
         if (glucose >= 250 || glucose < 70) color = "red";
         else if (glucose >= 180) color = "yellow";
 
-        // trend okları
         const trends = {
           DoubleUp: "↑↑", SingleUp: "↑",
           FortyFiveUp: "↗", Flat: "→",
@@ -193,7 +183,8 @@
         const bolus = Math.max(0, ((glucose - 100) / idf)).toFixed(1);
         document.getElementById("bolus-result").innerText = `Bolus önerisi: ${bolus} ünite`;
 
-        document.title = `${glucose} ${trendArrow} ${delta >= 0 ? "+" : ""}${delta}`;
+        document.title = `${glucose} ${trendArrow} (${delta >= 0 ? "+" : ""}${delta})`;
+
       } catch (e) {
         document.getElementById("glucose-section").innerText = "Şeker: Veri alınamadı";
         document.getElementById("bolus-result").innerText = "Bolus önerisi: - ünite";
@@ -219,6 +210,12 @@
       const timeStr = now.toLocaleTimeString("tr-TR", { hour: '2-digit', minute: '2-digit' });
       document.getElementById("current-time").innerText = timeStr;
     }
+
+    document.querySelectorAll('.carb-item input').forEach(input => {
+      input.addEventListener('input', calculateCarbs);
+    });
+
+    document.getElementById("idf").addEventListener('input', fetchGlucose);
 
     setInterval(fetchGlucose, 20000);
     setInterval(updateClock, 1000);
