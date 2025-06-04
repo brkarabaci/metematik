@@ -4,166 +4,201 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MeteMatik</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f0f8ff, #e0f7fa);
+      margin: 0;
+      padding: 20px;
       text-align: center;
-      padding: 1em;
     }
+
     h1 {
+      font-family: 'Fredoka', cursive;
+      font-size: 3.2em;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    #current-time {
       font-size: 2em;
+      margin-top: -10px;
+      margin-bottom: 20px;
+      color: #333;
     }
-    #bg, #delta, #time, #elapsed {
-      font-size: 1.4em;
-      margin: 0.5em 0;
-    }
-    #idf {
-      font-size: 1em;
-      width: 60px;
-    }
-    .food-input {
-      margin: 0.5em 0;
-    }
-    .emoji {
-      font-size: 1.2em;
-      margin-left: 5px;
-    }
-    .karb-result {
+
+    #glucose-section {
+      font-size: 2em;
       font-weight: bold;
-      margin-top: 1em;
-      font-size: 1.2em;
+      margin: 10px 0;
     }
+
+    .red { color: red; }
+    .yellow { color: goldenrod; }
+    .green { color: green; }
+
+    #delta-time {
+      font-size: 1em;
+      color: #666;
+      margin-bottom: 15px;
+    }
+
+    .carb-section {
+      text-align: left;
+      max-width: 400px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .group-title {
+      font-size: 1.3em;
+      margin-top: 20px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+
+    .carb-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+    }
+
     input[type="number"] {
       width: 80px;
+      padding: 5px;
+      font-size: 1em;
+    }
+
+    #idf {
+      font-size: 1em;
+      padding: 5px;
+      width: 60px;
+    }
+
+    #carb-result {
+      font-size: 2em;
+      font-weight: bold;
+      margin-top: 15px;
+      color: #333;
+    }
+
+    .emoji {
+      margin-right: 8px;
     }
   </style>
 </head>
 <body>
-  <h1>MeteMatik</h1>
-  <div id="bg">Şeker: ...</div>
-  <div id="delta">Delta: ...</div>
-  <div id="time">Zaman: ...</div>
-  <div id="elapsed">Geçen süre: ...</div>
-  <div>
-    <label for="idf">IDF:</label>
-    <input type="number" id="idf" min="50" max="120" value="75" />
-  </div>
-  <div>Bolus önerisi: <span id="bolus">...</span> ünite</div>
 
-  <hr />
-  <h2>🍽️ Karbonhidrat Hesaplayıcı</h2>
-  <div id="food-list"></div>
-  <div class="karb-result" id="karb-result"></div>
+  <h1>MeteMatik</h1>
+  <div id="current-time">--:--</div>
+
+  <div id="glucose-section">Şeker: Veri alınıyor...</div>
+  <div id="delta-time">Zaman bilgisi yükleniyor...</div>
+
+  <label for="idf">IDF:</label>
+  <input type="number" id="idf" value="75" min="50" max="120" />
+  <div id="bolus-result">Bolus önerisi: - ünite</div>
+
+  <div class="carb-section">
+    <div class="group-title">🍕 Pizza Grubu</div>
+    <div class="carb-item">Pide <span>0.4</span></div>
+    <div class="carb-item">Pişi <span>0.4</span></div>
+
+    <div class="group-title">🍭 Şeker Grubu</div>
+    <div class="carb-item">Pasta Pastaban <span>0.5</span></div>
+    <div class="carb-item">Puding (1 kase) <span>15</span></div>
+    <div class="carb-item">Yaş Pasta <span>0.45</span></div>
+    <div class="carb-item">Karpuz <span>0.08</span></div>
+
+    <div class="group-title">🌮 Taco Grubu</div>
+    <div class="carb-item">Ekmek <span>0.6</span></div>
+    <div class="carb-item">Mantı <span>0.35</span></div>
+    <div class="carb-item">Simit <span>0.45</span></div>
+
+    <div style="margin-top:20px;">
+      <label for="foodAmount">Miktar (gram/kase):</label>
+      <input type="number" id="foodAmount" placeholder="gram"/>
+      <label for="foodRatio">Karb. oranı:</label>
+      <input type="number" id="foodRatio" placeholder="0.6"/>
+      <button onclick="calculateCarbs()">Hesapla</button>
+      <div id="carb-result">0 Karb</div>
+    </div>
+  </div>
 
   <script>
-    const hedef = 120;
+    const NS_URL = "https://metesensor-d65c04745f2a.herokuapp.com/api/v1/entries.json?count=2";
 
-    const yiyecekler = [
-      { ad: "ekmek", oran: 0.6, sembol: "🌮" },
-      { ad: "pide", oran: 0.4, sembol: "🍕" },
-      { ad: "pasta pastaban", oran: 0.5, sembol: "🍭" },
-      { ad: "mantı", oran: 0.35, sembol: "🌮" },
-      { ad: "puding (1 kase)", oran: 15, sembol: "🍭" },
-      { ad: "yaş pasta", oran: 0.45, sembol: "🍭" },
-      { ad: "simit", oran: 0.45, sembol: "🌮" },
-      { ad: "karpuz", oran: 0.08, sembol: "🍭" },
-      { ad: "pişi", oran: 0.4, sembol: "🍕" },
-    ];
+    async function fetchGlucose() {
+      try {
+        const res = await fetch(NS_URL);
+        const data = await res.json();
+        const [latest, previous] = data;
+        const glucose = Math.round(latest.sgv);
+        const delta = Math.round(latest.sgv - previous.sgv);
+        const date = new Date(latest.date);
+        const now = new Date();
+        const minutesAgo = Math.floor((now - date) / 60000);
 
-    // Karb hesaplayıcı arayüzü
-    const foodListDiv = document.getElementById("food-list");
-    yiyecekler.forEach((item, i) => {
-      const div = document.createElement("div");
-      div.className = "food-input";
-      div.innerHTML = `
-        <label>${item.ad} <span class="emoji">${item.sembol}</span>: </label>
-        <input type="number" id="g-${i}" min="0" placeholder="gram">
-      `;
-      foodListDiv.appendChild(div);
-    });
+        // renk seçimi
+        let color = "green";
+        if (glucose >= 250 || glucose < 70) color = "red";
+        else if (glucose >= 180) color = "yellow";
 
-    foodListDiv.addEventListener("input", () => {
-      let toplamKarb = 0;
-      yiyecekler.forEach((item, i) => {
-        const gram = parseFloat(document.getElementById(`g-${i}`).value) || 0;
-        toplamKarb += gram * item.oran;
-      });
-      document.getElementById("karb-result").textContent =
-        `Toplam Karbonhidrat: ${toplamKarb.toFixed(1)} g`;
-    });
+        // trend okları
+        const trends = {
+          DoubleUp: "↑↑", SingleUp: "↑",
+          FortyFiveUp: "↗", Flat: "→",
+          FortyFiveDown: "↘", SingleDown: "↓",
+          DoubleDown: "↓↓"
+        };
+        const trendArrow = trends[latest.direction] || "?";
 
-    function renkKodla(deger) {
-      if (deger < 70 || deger >= 250) return "red";
-      if (deger >= 180) return "orange";
-      return "green";
-    }
+        document.getElementById("glucose-section").innerHTML =
+          `<span class="${color}">${glucose} ${trendArrow} (${delta >= 0 ? "+" : ""}${delta})</span>`;
 
-    function trendOkunuDonustur(direction) {
-      switch (direction) {
-        case "DoubleUp": return "↑↑";
-        case "SingleUp": return "↑";
-        case "FortyFiveUp": return "↗";
-        case "Flat": return "→";
-        case "FortyFiveDown": return "↘";
-        case "SingleDown": return "↓";
-        case "DoubleDown": return "↓↓";
-        default: return "?";
+        // zaman bilgisi
+        const saat = date.toLocaleTimeString("tr-TR", { hour: '2-digit', minute: '2-digit' });
+        document.getElementById("delta-time").innerText =
+          `${minutesAgo} dakika önce (${saat})`;
+
+        // bolus hesaplama
+        const idf = parseFloat(document.getElementById("idf").value);
+        const bolus = Math.max(0, ((glucose - 100) / idf)).toFixed(1);
+        document.getElementById("bolus-result").innerText = `Bolus önerisi: ${bolus} ünite`;
+
+        // sekme başlığı güncelle
+        document.title = `${glucose} ${trendArrow} ${delta >= 0 ? "+" : ""}${delta}`;
+      } catch (e) {
+        document.getElementById("glucose-section").innerText = "Şeker: Veri alınamadı";
+        document.getElementById("bolus-result").innerText = "Bolus önerisi: - ünite";
+        document.title = "MeteMatik";
       }
     }
 
-    function veriCekVeGuncelle() {
-      const idf = parseFloat(document.getElementById("idf").value);
-      const timestamp = new Date().getTime();
-      const url = `https://api.allorigins.win/raw?url=${encodeURIComponent("https://metesensor-d65c04745f2a.herokuapp.com/api/v1/entries.json?count=2")}&_=${timestamp}`;
-
-      fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          const son = data[0];
-          const onceki = data[1];
-          const bg = son.sgv;
-          const delta = bg - (onceki?.sgv || bg);
-          const trend = trendOkunuDonustur(son.direction);
-          const zaman = new Date(son.date);
-          const simdi = new Date();
-          const farkMs = simdi - zaman;
-          const gecenDakika = Math.floor(farkMs / 60000);
-          const saatDakika = `${Math.floor(gecenDakika / 60)}s ${gecenDakika % 60}d`;
-
-          // Şeker + Trend
-          const bgElem = document.getElementById("bg");
-          bgElem.textContent = `Şeker: ${bg} ${trend}`;
-          bgElem.style.color = renkKodla(bg);
-
-          const deltaElem = document.getElementById("delta");
-          deltaElem.textContent = `Delta: ${delta > 0 ? "+" : ""}${delta}`;
-          deltaElem.style.color = renkKodla(bg);
-
-          document.getElementById("time").textContent =
-            "Zaman: " + zaman.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
-
-          document.getElementById("elapsed").textContent =
-            `Geçen süre: ${gecenDakika} dakika önce (${zaman.getHours()}:${String(zaman.getMinutes()).padStart(2, "0")})`;
-
-          const bolus = bg > hedef ? (bg - hedef) / idf : 0;
-          document.getElementById("bolus").textContent = bolus.toFixed(1);
-
-          // Sekme başlığı
-          document.title = `${bg} ${trend} ${delta > 0 ? "+" : ""}${delta}`;
-        })
-        .catch(err => {
-          console.error("Veri çekme hatası:", err);
-          document.getElementById("bg").textContent = "Şeker: Veri alınamadı";
-          document.getElementById("delta").textContent = "Delta: -";
-          document.getElementById("time").textContent = "Zaman: -";
-          document.getElementById("elapsed").textContent = "Geçen süre: -";
-          document.getElementById("bolus").textContent = "-";
-          document.title = "Veri alınamadı";
-        });
+    function calculateCarbs() {
+      const gram = parseFloat(document.getElementById("foodAmount").value);
+      const ratio = parseFloat(document.getElementById("foodRatio").value);
+      if (!isNaN(gram) && !isNaN(ratio)) {
+        const result = (gram * ratio).toFixed(1);
+        document.getElementById("carb-result").innerText = `${result} Karb`;
+      }
     }
 
-    veriCekVeGuncelle();
-    setInterval(veriCekVeGuncelle, 60000);
+    // Saat güncelleme
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString("tr-TR", { hour: '2-digit', minute: '2-digit' });
+      document.getElementById("current-time").innerText = timeStr;
+    }
+
+    setInterval(fetchGlucose, 20000);
+    setInterval(updateClock, 1000);
+    fetchGlucose();
+    updateClock();
   </script>
 </body>
 </html>
