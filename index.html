@@ -16,22 +16,21 @@
 
     h1 {
       font-family: 'Fredoka', cursive;
-      font-size: 3.2em;
+      font-size: 3.5em;
       color: #333;
-      margin-bottom: 10px;
+      margin-bottom: 0;
     }
 
     #current-time {
       font-size: 2em;
-      margin-top: -10px;
-      margin-bottom: 20px;
+      margin-top: 5px;
       color: #333;
     }
 
     #glucose-section {
-      font-size: 2em;
+      font-size: 2.2em;
       font-weight: bold;
-      margin: 10px 0;
+      margin: 20px 0 5px;
     }
 
     .red { color: red; }
@@ -41,22 +40,43 @@
     #delta-time {
       font-size: 1em;
       color: #666;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    #idf {
+      font-size: 1em;
+      padding: 5px;
+      width: 60px;
+      margin-left: 5px;
+    }
+
+    #bolus-result {
+      font-size: 1.2em;
+      margin: 10px;
     }
 
     .carb-section {
+      max-width: 1000px;
+      margin: auto;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
       text-align: left;
-      max-width: 400px;
-      margin: 30px auto;
-      padding: 20px;
-      background: #fff;
-      border-radius: 15px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .group {
+      flex: 1;
+      padding: 10px;
+      min-width: 280px;
     }
 
     .group-title {
       font-size: 1.3em;
-      margin-top: 20px;
+      margin-bottom: 10px;
       border-bottom: 1px solid #ccc;
       padding-bottom: 5px;
     }
@@ -64,31 +84,34 @@
     .carb-item {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 6px 0;
     }
 
-    input[type="number"] {
-      width: 80px;
-      padding: 5px;
-      font-size: 1em;
-    }
-
-    #idf {
-      font-size: 1em;
-      padding: 5px;
+    .carb-item input {
       width: 60px;
+      padding: 5px;
+      font-size: 1em;
+      margin-left: 10px;
     }
 
     #carb-result {
       font-size: 2em;
       font-weight: bold;
-      margin-top: 15px;
+      margin-top: 30px;
       color: #333;
     }
 
-    .emoji {
-      margin-right: 8px;
+    button {
+      padding: 8px 16px;
+      font-size: 1em;
+      margin-top: 10px;
     }
+
+    input[type="number"] {
+      font-size: 1em;
+    }
+
   </style>
 </head>
 <body>
@@ -104,30 +127,32 @@
   <div id="bolus-result">Bolus önerisi: - ünite</div>
 
   <div class="carb-section">
-    <div class="group-title">🍕 Pizza Grubu</div>
-    <div class="carb-item">Pide <span>0.4</span></div>
-    <div class="carb-item">Pişi <span>0.4</span></div>
 
-    <div class="group-title">🍭 Şeker Grubu</div>
-    <div class="carb-item">Pasta Pastaban <span>0.5</span></div>
-    <div class="carb-item">Puding (1 kase) <span>15</span></div>
-    <div class="carb-item">Yaş Pasta <span>0.45</span></div>
-    <div class="carb-item">Karpuz <span>0.08</span></div>
-
-    <div class="group-title">🌮 Taco Grubu</div>
-    <div class="carb-item">Ekmek <span>0.6</span></div>
-    <div class="carb-item">Mantı <span>0.35</span></div>
-    <div class="carb-item">Simit <span>0.45</span></div>
-
-    <div style="margin-top:20px;">
-      <label for="foodAmount">Miktar (gram/kase):</label>
-      <input type="number" id="foodAmount" placeholder="gram"/>
-      <label for="foodRatio">Karb. oranı:</label>
-      <input type="number" id="foodRatio" placeholder="0.6"/>
-      <button onclick="calculateCarbs()">Hesapla</button>
-      <div id="carb-result">0 Karb</div>
+    <div class="group">
+      <div class="group-title">🍕 Pizza Grubu</div>
+      <div class="carb-item">Pide (0.4)<input type="number" data-ratio="0.4"/></div>
+      <div class="carb-item">Pişi (0.4)<input type="number" data-ratio="0.4"/></div>
     </div>
+
+    <div class="group">
+      <div class="group-title">🍭 Şeker Grubu</div>
+      <div class="carb-item">Pasta Pastaban (0.5)<input type="number" data-ratio="0.5"/></div>
+      <div class="carb-item">Puding 1 kase (15)<input type="number" data-ratio="15"/></div>
+      <div class="carb-item">Yaş Pasta (0.45)<input type="number" data-ratio="0.45"/></div>
+      <div class="carb-item">Karpuz (0.08)<input type="number" data-ratio="0.08"/></div>
+    </div>
+
+    <div class="group">
+      <div class="group-title">🌮 Taco Grubu</div>
+      <div class="carb-item">Ekmek (0.6)<input type="number" data-ratio="0.6"/></div>
+      <div class="carb-item">Mantı (0.35)<input type="number" data-ratio="0.35"/></div>
+      <div class="carb-item">Simit (0.45)<input type="number" data-ratio="0.45"/></div>
+    </div>
+
   </div>
+
+  <button onclick="calculateCarbs()">Karbonhidrat Hesapla</button>
+  <div id="carb-result">0 Karb</div>
 
   <script>
     const NS_URL = "https://metesensor-d65c04745f2a.herokuapp.com/api/v1/entries.json?count=2";
@@ -160,17 +185,14 @@
         document.getElementById("glucose-section").innerHTML =
           `<span class="${color}">${glucose} ${trendArrow} (${delta >= 0 ? "+" : ""}${delta})</span>`;
 
-        // zaman bilgisi
         const saat = date.toLocaleTimeString("tr-TR", { hour: '2-digit', minute: '2-digit' });
         document.getElementById("delta-time").innerText =
           `${minutesAgo} dakika önce (${saat})`;
 
-        // bolus hesaplama
         const idf = parseFloat(document.getElementById("idf").value);
         const bolus = Math.max(0, ((glucose - 100) / idf)).toFixed(1);
         document.getElementById("bolus-result").innerText = `Bolus önerisi: ${bolus} ünite`;
 
-        // sekme başlığı güncelle
         document.title = `${glucose} ${trendArrow} ${delta >= 0 ? "+" : ""}${delta}`;
       } catch (e) {
         document.getElementById("glucose-section").innerText = "Şeker: Veri alınamadı";
@@ -180,15 +202,18 @@
     }
 
     function calculateCarbs() {
-      const gram = parseFloat(document.getElementById("foodAmount").value);
-      const ratio = parseFloat(document.getElementById("foodRatio").value);
-      if (!isNaN(gram) && !isNaN(ratio)) {
-        const result = (gram * ratio).toFixed(1);
-        document.getElementById("carb-result").innerText = `${result} Karb`;
-      }
+      const inputs = document.querySelectorAll('.carb-item input');
+      let total = 0;
+      inputs.forEach(input => {
+        const gram = parseFloat(input.value);
+        const ratio = parseFloat(input.dataset.ratio);
+        if (!isNaN(gram)) {
+          total += ratio * gram;
+        }
+      });
+      document.getElementById("carb-result").innerText = `${total.toFixed(1)} Karb`;
     }
 
-    // Saat güncelleme
     function updateClock() {
       const now = new Date();
       const timeStr = now.toLocaleTimeString("tr-TR", { hour: '2-digit', minute: '2-digit' });
