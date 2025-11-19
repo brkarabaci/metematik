@@ -1,294 +1,50 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MeteMatik</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
-  body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #e0f7fa, #80deea);
-    color: #004d40;
-    margin: 0; padding: 20px;
-    display: flex; flex-direction: column; align-items: center;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MeteMatik</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Rajdhani', sans-serif;
+        background-color: #020617; /* slate-950 */
+        color: white;
+        overflow-x: hidden;
+      }
+      h1, h2, h3, .orbitron {
+        font-family: 'Orbitron', sans-serif;
+      }
+      /* Custom Scrollbar for textarea */
+      textarea::-webkit-scrollbar {
+        width: 8px;
+      }
+      textarea::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05); 
+      }
+      textarea::-webkit-scrollbar-thumb {
+        background: rgba(34, 211, 238, 0.3); 
+        border-radius: 4px;
+      }
+      textarea::-webkit-scrollbar-thumb:hover {
+        background: rgba(34, 211, 238, 0.5); 
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0"
   }
-  h1 {
-    font-family: 'Comic Neue', cursive, sans-serif;
-    font-size: 3.5rem;
-    margin-bottom: 5px;
-    user-select: none;
-    color: #00796b;
-  }
-  #time {
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin-bottom: 30px;
-  }
-  #sugar-container {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    user-select: none;
-  }
-  #sugar-value {
-    font-weight: bold;
-  }
-  #delta {
-    font-weight: bold;
-  }
-  #trend-arrow {
-    font-size: 1.7rem;
-  }
-  #last-measurement {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-    color: #00695c;
-    user-select: none;
-  }
-
-  /* Karbonhidrat hesaplayıcı stilleri */
-  #carb-calculator {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    width: 100%;
-    max-width: 900px;
-    margin-top: 10px;
-    user-select: none;
-    flex-wrap: wrap;
-  }
-  .food-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    min-width: 150px;
-  }
-  .food-group-label {
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-bottom: 8px;
-    user-select: none;
-    color: #00796b;
-    text-align: center;
-  }
-  .food-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .food-label {
-    min-width: 110px;
-  }
-  .food-symbol {
-    font-size: 1.5rem;
-  }
-  select, input[type="number"] {
-    padding: 4px;
-    font-size: 1rem;
-    border: 1px solid #004d40;
-    border-radius: 4px;
-  }
-  select {
-    width: 110px;
-  }
-  input[type="number"] {
-    width: 55px;
-  }
-
-  #carb-result {
-    margin-top: 20px;
-    font-size: 2rem;
-    font-weight: bold;
-    color: #00796b;
-    user-select: none;
-    width: 100%;
-    max-width: 900px;
-    text-align: center;
-  }
-  /* Responsive */
-  @media (max-width: 800px) {
-    #carb-calculator {
-      flex-direction: column;
-      align-items: center;
-    }
-  }
-</style>
-</head>
-<body>
-
-<h1>MeteMatik</h1>
-<div id="time">--:--</div>
-
-<div id="sugar-container">
-  <div id="sugar-value">--</div>
-  <div id="trend-arrow">→</div>
-  <div id="delta"></div>
-</div>
-
-<div id="last-measurement">Veri alınamadı</div>
-
-<!-- Karbonhidrat hesaplayıcı -->
-<div id="carb-result">Karbonhidrat: 0</div>
-<div id="carb-calculator">
-  <!-- Pizza Grubu -->
-  <div class="food-group" id="pizza-group">
-    <div class="food-group-label">🍕 Pizza</div>
-    <div class="food-item">
-      <select id="pizza-select">
-        <option value="" selected disabled>Ürün seç</option>
-        <option value="pide">Pide</option>
-        <option value="pisi">Pişi</option>
-      </select>
-      <input type="number" min="0" step="1" id="pizza-gram" placeholder="g" />
-    </div>
-  </div>
-  <!-- Şeker Grubu -->
-  <div class="food-group" id="sugar-group">
-    <div class="food-group-label">🍭 Şeker</div>
-    <div class="food-item">
-      <select id="sugar-select">
-        <option value="" selected disabled>Ürün seç</option>
-        <option value="pasta">Pasta Pastaban</option>
-        <option value="puding">Puding (1 kase)</option>
-        <option value="yasPasta">Yaş Pasta</option>
-        <option value="karpuz">Karpuz</option>
-      </select>
-      <input type="number" min="0" step="1" id="sugar-gram" placeholder="g" />
-    </div>
-  </div>
-  <!-- Taco Grubu -->
-  <div class="food-group" id="taco-group">
-    <div class="food-group-label">🌮 Taco</div>
-    <div class="food-item">
-      <select id="taco-select">
-        <option value="" selected disabled>Ürün seç</option>
-        <option value="ekmek">Ekmek</option>
-        <option value="manti">Mantı</option>
-        <option value="simit">Simit</option>
-      </select>
-      <input type="number" min="0" step="1" id="taco-gram" placeholder="g" />
-    </div>
-  </div>
-</div>
-
-<script>
-  // Saat gösterimi
-  function updateTime() {
-    const now = new Date();
-    const h = String(now.getHours()).padStart(2, '0');
-    const m = String(now.getMinutes()).padStart(2, '0');
-    document.getElementById('time').textContent = `${h}:${m}`;
-  }
-  setInterval(updateTime, 1000);
-  updateTime();
-
-  // Trend oklar
-  const trendArrows = {
-    "DoubleUp": "⬆⬆",
-    "SingleUp": "⬆",
-    "FortyFiveUp": "↗",
-    "Flat": "→",
-    "FortyFiveDown": "↘",
-    "SingleDown": "⬇",
-    "DoubleDown": "⬇⬇",
-  };
-
-  async function fetchAndDisplayData() {
-    try {
-      const res = await fetch("https://api.allorigins.win/raw?url=https://metesensor-d65c04745f2a.herokuapp.com/api/v1/entries.json?count=2");
-      if (!res.ok) throw new Error('API hatası');
-      const data = await res.json();
-
-      if (!data || data.length === 0) throw new Error('Veri yok');
-
-      const latest = data[0];
-      const previous = data[1] || latest;
-
-      const sugar = latest.sgv;
-      const previousSugar = previous.sgv;
-      const delta = sugar - previousSugar;
-      const deltaSign = delta > 0 ? "+" : "";
-      const deltaDisplay = `${deltaSign}${delta}`;
-
-      const trend = latest.trend;
-      const trendArrow = trendArrows[trend] || "→";
-
-      // Saat ve geçen süre
-      const now = new Date();
-      const measureDate = new Date(latest.date);
-      const diffMs = now - measureDate;
-      const diffMin = Math.floor(diffMs / 60000);
-      const measureTimeStr = measureDate.getHours().toString().padStart(2, "0") + ":" + measureDate.getMinutes().toString().padStart(2, "0");
-      const elapsedStr = diffMin < 60 ? `${diffMin} dk önce` : `${Math.floor(diffMin / 60)} saat önce`;
-
-      document.getElementById("sugar-value").textContent = sugar;
-      document.getElementById("delta").textContent = deltaDisplay;
-      document.getElementById("trend-arrow").textContent = trendArrow;
-      document.getElementById("last-measurement").textContent = `${measureTimeStr} - ${elapsedStr}`;
-
-      // Sekme başlığına yaz
-      document.title = `${sugar} ${trendArrow} (${deltaDisplay})`;
-
-    } catch (error) {
-      document.getElementById("last-measurement").textContent = "Veri alınamadı";
-      document.title = "MeteMatik";
-    }
-  }
-
-  setInterval(fetchAndDisplayData, 30000);
-  fetchAndDisplayData();
-
-  // Karbonhidrat değerleri
-  const carbValues = {
-    ekmek: 0.6,
-    pide: 0.4,
-    pasta: 0.5,
-    manti: 0.35,
-    puding: 15,
-    yasPasta: 0.45,
-    simit: 0.45,
-    karpuz: 0.08,
-    pisi: 0.4,
-  };
-
-  function calculateCarbs() {
-    let total = 0;
-
-    // Pizza grup
-    const pizzaProduct = document.getElementById('pizza-select').value;
-    const pizzaGram = parseFloat(document.getElementById('pizza-gram').value);
-    if (pizzaProduct && !isNaN(pizzaGram) && pizzaGram > 0) {
-      total += pizzaGram * carbValues[pizzaProduct];
-    }
-
-    // Şeker grup
-    const sugarProduct = document.getElementById('sugar-select').value;
-    const sugarGram = parseFloat(document.getElementById('sugar-gram').value);
-    if (sugarProduct && !isNaN(sugarGram) && sugarGram > 0) {
-      total += sugarGram * carbValues[sugarProduct];
-    }
-
-    // Taco grup
-    const tacoProduct = document.getElementById('taco-select').value;
-    const tacoGram = parseFloat(document.getElementById('taco-gram').value);
-    if (tacoProduct && !isNaN(tacoGram) && tacoGram > 0) {
-      total += tacoGram * carbValues[tacoProduct];
-    }
-
-    // En yakın tam sayıya yuvarla
-    total = Math.round(total);
-
-    document.getElementById('carb-result').textContent = `Karbonhidrat: ${total}`;
-  }
-
-  // Input ve selectlara event ekle
-  ['pizza-select','pizza-gram','sugar-select','sugar-gram','taco-select','taco-gram'].forEach(id => {
-    document.getElementById(id).addEventListener('input', calculateCarbs);
-  });
-
+}
 </script>
-</body>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>
