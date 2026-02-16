@@ -58,11 +58,12 @@ h1{
 }
 
 select,input{
-  padding:6px;
-  border-radius:6px;
+  padding:8px;
+  border-radius:8px;
   border:1px solid #ccc;
   width:100%;
   margin-top:5px;
+  font-size:1rem;
 }
 
 button{
@@ -86,23 +87,48 @@ button{
   left:0;
   width:100%;
   height:100%;
-  background:rgba(0,0,0,0.5);
+  background:rgba(0,0,0,0.55);
   display:none;
   justify-content:center;
   align-items:center;
+  z-index:999;
 }
 
 .modal-content{
   background:white;
-  padding:20px;
-  border-radius:12px;
-  width:320px;
+  padding:25px;
+  border-radius:14px;
+  width:360px;
+  max-height:90vh;
+  overflow-y:auto;
 }
 
-.food-row{
+.section{
+  margin-bottom:25px;
+  padding-bottom:15px;
+  border-bottom:1px solid #eee;
+}
+
+.section h3{
+  margin-top:0;
+}
+
+label{
+  font-size:0.9rem;
+  margin-top:8px;
+  display:block;
+}
+
+.admin-buttons{
   display:flex;
-  justify-content:space-between;
-  margin-bottom:6px;
+  gap:10px;
+  margin-top:15px;
+}
+
+.delete-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
 }
 
 @media(max-width:700px){
@@ -145,12 +171,50 @@ button{
 
 <div class="modal" id="adminModal">
   <div class="modal-content">
-    <h3>Yiyecek Yönetimi</h3>
 
-    <button onclick="addFoodPrompt()">Yiyecek Ekle</button>
-    <hr>
-    <div id="foodList"></div>
-    <hr>
+    <div class="section">
+      <h3>➕ Yeni Yiyecek Ekle</h3>
+
+      <label>Yiyecek adı</label>
+      <input id="newName">
+
+      <label>Grup</label>
+      <select id="newGroup">
+        <option value="pizza">Pizza</option>
+        <option value="sugar">Şeker</option>
+        <option value="taco">Taco</option>
+      </select>
+
+      <label>Hesaplama türü</label>
+      <select id="newType">
+        <option value="gram">100 gr üzerinden</option>
+        <option value="adet">Adet üzerinden</option>
+      </select>
+
+      <label id="valueLabel">Karbonhidrat</label>
+      <input id="newCarb" type="number" min="0">
+
+      <button onclick="confirmAddFood()">Yiyeceği Ekle</button>
+    </div>
+
+
+    <div class="section">
+      <h3>🗑 Yiyecek Sil</h3>
+
+      <label>Grup</label>
+      <select id="deleteGroup" onchange="populateDeleteList()">
+        <option value="pizza">Pizza</option>
+        <option value="sugar">Şeker</option>
+        <option value="taco">Taco</option>
+      </select>
+
+      <label>Yiyecek</label>
+      <select id="deleteFood"></select>
+
+      <button onclick="confirmDeleteFood()">Sil</button>
+    </div>
+
+
     <button onclick="closeAdmin()">Kapat</button>
   </div>
 </div>
@@ -160,12 +224,10 @@ button{
 const ADMIN_PASSWORD="omurmete";
 
 const defaultFoods={
-
 pizza:[
  {name:"Pide",type:"gram",carbPerGram:0.4},
  {name:"Pişi",type:"gram",carbPerGram:0.4}
 ],
-
 sugar:[
  {name:"Baklava Cevizli Dilim",type:"adet",carbPerUnit:15},
  {name:"Baklava Fıstıklı Dilim",type:"adet",carbPerUnit:20},
@@ -183,7 +245,6 @@ sugar:[
  {name:"Waffle Pastanecim Adet",type:"adet",carbPerUnit:50},
  {name:"Yaş Pasta Migros",type:"gram",carbPerGram:0.45}
 ],
-
 taco:[
  {name:"Bazlama",type:"gram",carbPerGram:0.5},
  {name:"Börek",type:"gram",carbPerGram:0.2},
@@ -227,7 +288,7 @@ function renderAll(){
  populateSelect("pizza-select",foods.pizza);
  populateSelect("sugar-select",foods.sugar);
  populateSelect("taco-select",foods.taco);
- renderFoodList();
+ populateDeleteList();
 }
 
 renderAll();
@@ -259,8 +320,6 @@ function calculate(){
 // ADMIN
 
 document.getElementById("adminBtn").onclick=()=>{
- const p=prompt("Şifre");
- if(p!==ADMIN_PASSWORD)return;
  document.getElementById("adminModal").style.display="flex";
 };
 
@@ -268,18 +327,24 @@ function closeAdmin(){
  document.getElementById("adminModal").style.display="none";
 }
 
-function addFoodPrompt(){
- const name=prompt("Yiyecek adı");
- if(!name)return;
 
- const group=prompt("Grup: pizza / sugar / taco");
- if(!foods[group])return alert("Grup hatalı");
+// ADD FOOD
+function confirmAddFood(){
+ const name=document.getElementById("newName").value.trim();
+ const group=document.getElementById("newGroup").value;
+ const type=document.getElementById("newType").value;
+ const carb=parseFloat(document.getElementById("newCarb").value);
 
- const type=prompt("Tür: gram / adet");
- if(type!=="gram"&&type!=="adet")return;
+ if(!name||isNaN(carb)){
+   alert("Bilgileri doldurun");
+   return;
+ }
 
- const carb=parseFloat(prompt(type==="gram"?"100 gramdaki karbonhidrat":"1 adette karbonhidrat"));
- if(isNaN(carb))return;
+ const pass=prompt("Eklemek için şifre girin");
+ if(pass!==ADMIN_PASSWORD){
+   alert("Şifre yanlış");
+   return;
+ }
 
  const food={name,type};
  if(type==="gram")food.carbPerGram=carb/100;
@@ -287,43 +352,49 @@ function addFoodPrompt(){
 
  foods[group].push(food);
  saveFoods();
+ alert("Eklendi");
 }
 
-function renderFoodList(){
- const box=document.getElementById("foodList");
- box.innerHTML="";
 
- Object.keys(foods).forEach(group=>{
-   const title=document.createElement("div");
-   title.innerHTML="<b>"+group.toUpperCase()+"</b>";
-   box.appendChild(title);
-
-   sortFoods(foods[group]).forEach((f,i)=>{
-     const row=document.createElement("div");
-     row.className="food-row";
-     row.innerHTML=`${f.name} <button onclick="removeFood('${group}','${f.name}')">X</button>`;
-     box.appendChild(row);
-   });
+// DELETE FOOD
+function populateDeleteList(){
+ const group=document.getElementById("deleteGroup").value;
+ const sel=document.getElementById("deleteFood");
+ sel.innerHTML="";
+ sortFoods(foods[group]).forEach((f,i)=>{
+   const o=document.createElement("option");
+   o.value=i;
+   o.textContent=f.name;
+   sel.appendChild(o);
  });
 }
 
-function removeFood(group,name){
- foods[group]=foods[group].filter(f=>f.name!==name);
+function confirmDeleteFood(){
+ const group=document.getElementById("deleteGroup").value;
+ const index=document.getElementById("deleteFood").value;
+ if(index==="")return;
+
+ const pass=prompt("Silmek için şifre girin");
+ if(pass!==ADMIN_PASSWORD){
+   alert("Şifre yanlış");
+   return;
+ }
+
+ foods[group].splice(index,1);
  saveFoods();
+ alert("Silindi");
 }
 
 
-
-// OFFLINE SERVICE WORKER
+// OFFLINE
 if("serviceWorker" in navigator){
  const swCode=`
   self.addEventListener('install',e=>{
-    e.waitUntil(caches.open('metematik-v1').then(c=>c.addAll(['./'])));
+    e.waitUntil(caches.open('metematik-v2').then(c=>c.addAll(['./'])));
   });
   self.addEventListener('fetch',e=>{
     e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));
   });`;
-
  const blob=new Blob([swCode],{type:'text/javascript'});
  const swURL=URL.createObjectURL(blob);
  navigator.serviceWorker.register(swURL);
