@@ -4,290 +4,330 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MeteMatik</title>
+
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
-  body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #e0f7fa, #80deea);
-    color: #004d40;
-    margin: 0; padding: 20px;
-    display: flex; flex-direction: column; align-items: center;
-  }
-  h1 {
-    font-family: 'Comic Neue', cursive, sans-serif;
-    font-size: 3.5rem;
-    margin-bottom: 5px;
-    user-select: none;
-    color: #00796b;
-  }
-  #time {
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin-bottom: 30px;
-  }
-  #sugar-container {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    user-select: none;
-  }
-  #sugar-value {
-    font-weight: bold;
-  }
-  #delta {
-    font-weight: bold;
-  }
-  #trend-arrow {
-    font-size: 1.7rem;
-  }
-  #last-measurement {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-    color: #00695c;
-    user-select: none;
-  }
+body{
+  font-family: Arial, sans-serif;
+  margin:0;
+  padding:20px;
+  background:linear-gradient(135deg,#e3f2fd,#e0f7fa);
+  color:#004d40;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
 
-  /* Karbonhidrat hesaplayıcı stilleri */
-  #carb-calculator {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    width: 100%;
-    max-width: 900px;
-    margin-top: 10px;
-    user-select: none;
-    flex-wrap: wrap;
-  }
-  .food-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    min-width: 150px;
-  }
-  .food-group-label {
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-bottom: 8px;
-    user-select: none;
-    color: #00796b;
-    text-align: center;
-  }
-  .food-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .food-label {
-    min-width: 110px;
-  }
-  .food-symbol {
-    font-size: 1.5rem;
-  }
-  select, input[type="number"] {
-    padding: 4px;
-    font-size: 1rem;
-    border: 1px solid #004d40;
-    border-radius: 4px;
-  }
-  select {
-    width: 110px;
-  }
-  input[type="number"] {
-    width: 55px;
-  }
+h1{
+  font-size:3.2rem;
+  margin-bottom:10px;
+  color:#00695c;
+}
 
-  #carb-result {
-    margin-top: 20px;
-    font-size: 2rem;
-    font-weight: bold;
-    color: #00796b;
-    user-select: none;
-    width: 100%;
-    max-width: 900px;
-    text-align: center;
-  }
-  /* Responsive */
-  @media (max-width: 800px) {
-    #carb-calculator {
-      flex-direction: column;
-      align-items: center;
-    }
-  }
+.card{
+  background:white;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.1);
+  width:100%;
+  max-width:900px;
+  margin-bottom:20px;
+}
+
+#carb-result{
+  font-size:2.2rem;
+  font-weight:bold;
+  text-align:center;
+}
+
+#carb-calculator{
+  display:flex;
+  gap:25px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+.food-group{
+  min-width:220px;
+}
+
+.food-group-label{
+  font-size:1.3rem;
+  font-weight:bold;
+  margin-bottom:8px;
+  text-align:center;
+}
+
+select,input{
+  padding:6px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  width:100%;
+  margin-top:5px;
+}
+
+button{
+  padding:10px 16px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+#adminBtn{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#00796b;
+  color:white;
+}
+
+.modal{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+
+.modal-content{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  width:320px;
+}
+
+.food-row{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:6px;
+}
+
+@media(max-width:700px){
+  #carb-calculator{flex-direction:column}
+}
 </style>
 </head>
+
 <body>
 
 <h1>MeteMatik</h1>
-<div id="time">--:--</div>
 
-<div id="sugar-container">
-  <div id="sugar-value">--</div>
-  <div id="trend-arrow">→</div>
-  <div id="delta"></div>
+<div class="card">
+  <div id="carb-result">Karbonhidrat: 0</div>
 </div>
 
-<div id="last-measurement">Veri alınamadı</div>
+<div class="card" id="carb-calculator">
 
-<!-- Karbonhidrat hesaplayıcı -->
-<div id="carb-result">Karbonhidrat: 0</div>
-<div id="carb-calculator">
-  <!-- Pizza Grubu -->
-  <div class="food-group" id="pizza-group">
-    <div class="food-group-label">🍕 Pizza</div>
-    <div class="food-item">
-      <select id="pizza-select">
-        <option value="" selected disabled>Ürün seç</option>
-        <option value="pide">Pide</option>
-        <option value="pisi">Pişi</option>
-      </select>
-      <input type="number" min="0" step="1" id="pizza-gram" placeholder="g" />
-    </div>
-  </div>
-  <!-- Şeker Grubu -->
-  <div class="food-group" id="sugar-group">
-    <div class="food-group-label">🍭 Şeker</div>
-    <div class="food-item">
-      <select id="sugar-select">
-        <option value="" selected disabled>Ürün seç</option>
-        <option value="pasta">Pasta Pastaban</option>
-        <option value="puding">Puding (1 kase)</option>
-        <option value="yasPasta">Yaş Pasta</option>
-        <option value="karpuz">Karpuz</option>
-      </select>
-      <input type="number" min="0" step="1" id="sugar-gram" placeholder="g" />
-    </div>
-  </div>
-  <!-- Taco Grubu -->
-  <div class="food-group" id="taco-group">
-    <div class="food-group-label">🌮 Taco</div>
-    <div class="food-item">
-      <select id="taco-select">
-        <option value="" selected disabled>Ürün seç</option>
-        <option value="ekmek">Ekmek</option>
-        <option value="manti">Mantı</option>
-        <option value="simit">Simit</option>
-      </select>
-      <input type="number" min="0" step="1" id="taco-gram" placeholder="g" />
-    </div>
+<div class="food-group">
+<div class="food-group-label">🍕 Pizza</div>
+<select id="pizza-select"></select>
+<input id="pizza-amount" type="number" min="0" placeholder="Miktar">
+</div>
+
+<div class="food-group">
+<div class="food-group-label">🍭 Şeker</div>
+<select id="sugar-select"></select>
+<input id="sugar-amount" type="number" min="0" placeholder="Miktar">
+</div>
+
+<div class="food-group">
+<div class="food-group-label">🌮 Taco</div>
+<select id="taco-select"></select>
+<input id="taco-amount" type="number" min="0" placeholder="Miktar">
+</div>
+
+</div>
+
+<button id="adminBtn">⚙ Yiyecek Yönet</button>
+
+<div class="modal" id="adminModal">
+  <div class="modal-content">
+    <h3>Yiyecek Yönetimi</h3>
+
+    <button onclick="addFoodPrompt()">Yiyecek Ekle</button>
+    <hr>
+    <div id="foodList"></div>
+    <hr>
+    <button onclick="closeAdmin()">Kapat</button>
   </div>
 </div>
 
 <script>
-  // Saat gösterimi
-  function updateTime() {
-    const now = new Date();
-    const h = String(now.getHours()).padStart(2, '0');
-    const m = String(now.getMinutes()).padStart(2, '0');
-    document.getElementById('time').textContent = `${h}:${m}`;
-  }
-  setInterval(updateTime, 1000);
-  updateTime();
 
-  // Trend oklar
-  const trendArrows = {
-    "DoubleUp": "⬆⬆",
-    "SingleUp": "⬆",
-    "FortyFiveUp": "↗",
-    "Flat": "→",
-    "FortyFiveDown": "↘",
-    "SingleDown": "⬇",
-    "DoubleDown": "⬇⬇",
-  };
+const ADMIN_PASSWORD="omurmete";
 
-  async function fetchAndDisplayData() {
-    try {
-      const res = await fetch("https://api.allorigins.win/raw?url=https://metesensor-d65c04745f2a.herokuapp.com/api/v1/entries.json?count=2");
-      if (!res.ok) throw new Error('API hatası');
-      const data = await res.json();
+const defaultFoods={
 
-      if (!data || data.length === 0) throw new Error('Veri yok');
+pizza:[
+ {name:"Pide",type:"gram",carbPerGram:0.4},
+ {name:"Pişi",type:"gram",carbPerGram:0.4}
+],
 
-      const latest = data[0];
-      const previous = data[1] || latest;
+sugar:[
+ {name:"Baklava Cevizli Dilim",type:"adet",carbPerUnit:15},
+ {name:"Baklava Fıstıklı Dilim",type:"adet",carbPerUnit:20},
+ {name:"Dondurma Top",type:"adet",carbPerUnit:25},
+ {name:"Karpuz",type:"gram",carbPerGram:0.08},
+ {name:"Kavun",type:"gram",carbPerGram:0.08},
+ {name:"Kek",type:"gram",carbPerGram:0.45},
+ {name:"Kıbrıs Tatlısı",type:"gram",carbPerGram:0.29},
+ {name:"Krep Adet",type:"adet",carbPerUnit:15},
+ {name:"Mandalina Adet",type:"adet",carbPerUnit:10},
+ {name:"Muz İthal Adet",type:"adet",carbPerUnit:15},
+ {name:"Muz Yerli Adet",type:"adet",carbPerUnit:10},
+ {name:"Pasta Pastaban",type:"gram",carbPerGram:0.5},
+ {name:"Puding (1 kase)",type:"adet",carbPerUnit:15},
+ {name:"Waffle Pastanecim Adet",type:"adet",carbPerUnit:50},
+ {name:"Yaş Pasta Migros",type:"gram",carbPerGram:0.45}
+],
 
-      const sugar = latest.sgv;
-      const previousSugar = previous.sgv;
-      const delta = sugar - previousSugar;
-      const deltaSign = delta > 0 ? "+" : "";
-      const deltaDisplay = `${deltaSign}${delta}`;
+taco:[
+ {name:"Bazlama",type:"gram",carbPerGram:0.5},
+ {name:"Börek",type:"gram",carbPerGram:0.2},
+ {name:"Ekmek",type:"gram",carbPerGram:0.6},
+ {name:"Kaşar Dilim",type:"adet",carbPerUnit:2.5},
+ {name:"Mantı",type:"gram",carbPerGram:0.35},
+ {name:"Makarna",type:"gram",carbPerGram:0.25},
+ {name:"Patates Kzrtm",type:"gram",carbPerGram:0.3},
+ {name:"Patates Kzrtm Hazır",type:"gram",carbPerGram:0.2},
+ {name:"Patatesli Yumurta",type:"gram",carbPerGram:0.2},
+ {name:"Pilav",type:"gram",carbPerGram:0.28},
+ {name:"Salam Dilim",type:"adet",carbPerUnit:2.5},
+ {name:"Simit",type:"gram",carbPerGram:0.45},
+ {name:"Tavuk Lavaş Dürüm",type:"adet",carbPerUnit:70}
+]
+};
 
-      const trend = latest.trend;
-      const trendArrow = trendArrows[trend] || "→";
+let foods=JSON.parse(localStorage.getItem("foods"))||defaultFoods;
 
-      // Saat ve geçen süre
-      const now = new Date();
-      const measureDate = new Date(latest.date);
-      const diffMs = now - measureDate;
-      const diffMin = Math.floor(diffMs / 60000);
-      const measureTimeStr = measureDate.getHours().toString().padStart(2, "0") + ":" + measureDate.getMinutes().toString().padStart(2, "0");
-      const elapsedStr = diffMin < 60 ? `${diffMin} dk önce` : `${Math.floor(diffMin / 60)} saat önce`;
+function saveFoods(){
+ localStorage.setItem("foods",JSON.stringify(foods));
+ renderAll();
+}
 
-      document.getElementById("sugar-value").textContent = sugar;
-      document.getElementById("delta").textContent = deltaDisplay;
-      document.getElementById("trend-arrow").textContent = trendArrow;
-      document.getElementById("last-measurement").textContent = `${measureTimeStr} - ${elapsedStr}`;
+function sortFoods(arr){
+ return arr.sort((a,b)=>a.name.localeCompare(b.name,'tr'));
+}
 
-      // Sekme başlığına yaz
-      document.title = `${sugar} ${trendArrow} (${deltaDisplay})`;
+function populateSelect(id,list){
+ const sel=document.getElementById(id);
+ sel.innerHTML="<option value=''>Seç</option>";
+ sortFoods(list).forEach((f,i)=>{
+   const o=document.createElement("option");
+   o.value=i;
+   o.textContent=f.name;
+   sel.appendChild(o);
+ });
+}
 
-    } catch (error) {
-      document.getElementById("last-measurement").textContent = "Veri alınamadı";
-      document.title = "MeteMatik";
-    }
-  }
+function renderAll(){
+ populateSelect("pizza-select",foods.pizza);
+ populateSelect("sugar-select",foods.sugar);
+ populateSelect("taco-select",foods.taco);
+ renderFoodList();
+}
 
-  setInterval(fetchAndDisplayData, 30000);
-  fetchAndDisplayData();
+renderAll();
 
-  // Karbonhidrat değerleri
-  const carbValues = {
-    ekmek: 0.6,
-    pide: 0.4,
-    pasta: 0.5,
-    manti: 0.35,
-    puding: 15,
-    yasPasta: 0.45,
-    simit: 0.45,
-    karpuz: 0.08,
-    pisi: 0.4,
-  };
+function calcGroup(group,selectId,inputId){
+ const index=document.getElementById(selectId).value;
+ const amount=parseFloat(document.getElementById(inputId).value);
+ if(index===""||!amount)return 0;
+ const food=foods[group][index];
+ if(food.type==="gram")return amount*food.carbPerGram;
+ if(food.type==="adet")return amount*food.carbPerUnit;
+ return 0;
+}
 
-  function calculateCarbs() {
-    let total = 0;
+function calculate(){
+ let total=0;
+ total+=calcGroup("pizza","pizza-select","pizza-amount");
+ total+=calcGroup("sugar","sugar-select","sugar-amount");
+ total+=calcGroup("taco","taco-select","taco-amount");
+ document.getElementById("carb-result").textContent="Karbonhidrat: "+Math.round(total);
+}
 
-    // Pizza grup
-    const pizzaProduct = document.getElementById('pizza-select').value;
-    const pizzaGram = parseFloat(document.getElementById('pizza-gram').value);
-    if (pizzaProduct && !isNaN(pizzaGram) && pizzaGram > 0) {
-      total += pizzaGram * carbValues[pizzaProduct];
-    }
+["pizza-select","pizza-amount","sugar-select","sugar-amount","taco-select","taco-amount"].forEach(id=>{
+ document.getElementById(id).addEventListener("input",calculate);
+});
 
-    // Şeker grup
-    const sugarProduct = document.getElementById('sugar-select').value;
-    const sugarGram = parseFloat(document.getElementById('sugar-gram').value);
-    if (sugarProduct && !isNaN(sugarGram) && sugarGram > 0) {
-      total += sugarGram * carbValues[sugarProduct];
-    }
 
-    // Taco grup
-    const tacoProduct = document.getElementById('taco-select').value;
-    const tacoGram = parseFloat(document.getElementById('taco-gram').value);
-    if (tacoProduct && !isNaN(tacoGram) && tacoGram > 0) {
-      total += tacoGram * carbValues[tacoProduct];
-    }
 
-    // En yakın tam sayıya yuvarla
-    total = Math.round(total);
+// ADMIN
 
-    document.getElementById('carb-result').textContent = `Karbonhidrat: ${total}`;
-  }
+document.getElementById("adminBtn").onclick=()=>{
+ const p=prompt("Şifre");
+ if(p!==ADMIN_PASSWORD)return;
+ document.getElementById("adminModal").style.display="flex";
+};
 
-  // Input ve selectlara event ekle
-  ['pizza-select','pizza-gram','sugar-select','sugar-gram','taco-select','taco-gram'].forEach(id => {
-    document.getElementById(id).addEventListener('input', calculateCarbs);
+function closeAdmin(){
+ document.getElementById("adminModal").style.display="none";
+}
+
+function addFoodPrompt(){
+ const name=prompt("Yiyecek adı");
+ if(!name)return;
+
+ const group=prompt("Grup: pizza / sugar / taco");
+ if(!foods[group])return alert("Grup hatalı");
+
+ const type=prompt("Tür: gram / adet");
+ if(type!=="gram"&&type!=="adet")return;
+
+ const carb=parseFloat(prompt(type==="gram"?"100 gramdaki karbonhidrat":"1 adette karbonhidrat"));
+ if(isNaN(carb))return;
+
+ const food={name,type};
+ if(type==="gram")food.carbPerGram=carb/100;
+ if(type==="adet")food.carbPerUnit=carb;
+
+ foods[group].push(food);
+ saveFoods();
+}
+
+function renderFoodList(){
+ const box=document.getElementById("foodList");
+ box.innerHTML="";
+
+ Object.keys(foods).forEach(group=>{
+   const title=document.createElement("div");
+   title.innerHTML="<b>"+group.toUpperCase()+"</b>";
+   box.appendChild(title);
+
+   sortFoods(foods[group]).forEach((f,i)=>{
+     const row=document.createElement("div");
+     row.className="food-row";
+     row.innerHTML=`${f.name} <button onclick="removeFood('${group}','${f.name}')">X</button>`;
+     box.appendChild(row);
+   });
+ });
+}
+
+function removeFood(group,name){
+ foods[group]=foods[group].filter(f=>f.name!==name);
+ saveFoods();
+}
+
+
+
+// OFFLINE SERVICE WORKER
+if("serviceWorker" in navigator){
+ const swCode=`
+  self.addEventListener('install',e=>{
+    e.waitUntil(caches.open('metematik-v1').then(c=>c.addAll(['./'])));
   });
+  self.addEventListener('fetch',e=>{
+    e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));
+  });`;
+
+ const blob=new Blob([swCode],{type:'text/javascript'});
+ const swURL=URL.createObjectURL(blob);
+ navigator.serviceWorker.register(swURL);
+}
 
 </script>
 </body>
