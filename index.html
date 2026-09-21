@@ -18,19 +18,19 @@
 html,body{width:100%; max-width:100%; overflow-x:hidden}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-  margin:0; padding:10px 10px 8px;
+  margin:0; padding:12px 12px 8px;
   background:linear-gradient(160deg,var(--bg1),var(--bg2));
   color:var(--ink);
   display:flex; flex-direction:column; align-items:center;
-  padding-top:env(safe-area-inset-top,10px);
-  padding-bottom:calc(74px + env(safe-area-inset-bottom,0px));
+  padding-top:env(safe-area-inset-top,12px);
+  padding-bottom:calc(84px + env(safe-area-inset-bottom,0px));
   min-height:100dvh;
   letter-spacing:-0.01em;
   text-align:center;
 }
-h1{font-size:1.35rem;margin:2px 0 8px;color:var(--accent-dark);text-align:center;font-weight:800;letter-spacing:-0.02em}
+h1{font-size:1.5rem;margin:4px 0 10px;color:var(--accent-dark);text-align:center;font-weight:800;letter-spacing:-0.02em}
 .card{
-  background:var(--card); border-radius:var(--radius); padding:12px;
+  background:var(--card); border-radius:var(--radius); padding:15px;
   box-shadow:0 4px 14px rgba(15,60,55,0.07);
   border:1px solid var(--line);
   width:100%; max-width:640px; margin-bottom:8px;
@@ -119,18 +119,18 @@ h1{font-size:1.35rem;margin:2px 0 8px;color:var(--accent-dark);text-align:center
 /* --- Alt buton çubuğu --- */
 .nav-bar{
   position:fixed; left:0; right:0; bottom:0;
-  padding:7px 8px calc(7px + env(safe-area-inset-bottom,0px));
+  padding:10px 8px calc(10px + env(safe-area-inset-bottom,0px));
   background:#ffffffee; backdrop-filter:blur(6px);
-  display:flex; justify-content:center; gap:5px; box-shadow:0 -4px 16px rgba(0,0,0,0.08);
+  display:flex; justify-content:center; gap:6px; box-shadow:0 -4px 16px rgba(0,0,0,0.08);
   z-index:50;
 }
 .nav-bar button{
-  flex:1; max-width:140px; background:none; border:none; color:var(--accent-dark);
-  display:flex; flex-direction:column; align-items:center; gap:1px; font-size:0.68rem; font-weight:600;
-  padding:5px 2px; border-radius:9px; cursor:pointer;
+  flex:1; max-width:150px; background:none; border:none; color:var(--accent-dark);
+  display:flex; flex-direction:column; align-items:center; gap:3px; font-size:0.78rem; font-weight:600;
+  padding:7px 2px; border-radius:10px; cursor:pointer;
 }
 .nav-bar button:active{background:#eaf4f2}
-.nav-bar .icon{font-size:1.25rem}
+.nav-bar .icon{font-size:1.55rem}
 
 /* --- Modal --- */
 .modal{
@@ -158,6 +158,15 @@ select,input{
 select:focus,input:focus{border-color:var(--accent); background:#fff; outline:none}
 .section{margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #eee}
 .section:last-child{border-bottom:none}
+.fav-input-wrap{position:relative; margin-top:6px}
+.fav-suggestions{
+  position:absolute; left:0; right:0; top:100%;
+  background:#fff; border:1px solid var(--line); border-top:none;
+  border-radius:0 0 9px 9px; max-height:160px; overflow-y:auto;
+  box-shadow:0 8px 16px rgba(0,0,0,0.08); z-index:20; display:none;
+}
+.fav-suggestions div{padding:8px 12px; cursor:pointer; font-size:0.9rem}
+.fav-suggestions div:hover{background:#eaf4f2}
 .tag{display:inline-block; padding:2px 9px; border-radius:20px; font-size:0.7rem; font-weight:700; color:#fff}
 .tag.auth{background:var(--red)}
 .tag.noauth{background:var(--green)}
@@ -303,7 +312,7 @@ select:focus,input:focus{border-color:var(--accent); background:#fff; outline:no
     </div>
 
     <div class="section">
-      <h4>⭐ Favori 10</h4>
+      <h4>⭐ Favori 15</h4>
       <p class="hint">Ana sayfadaki hızlı erişim butonları. Yiyecek adını yazın.</p>
       <div id="fav-inputs"></div>
       <button class="btn" onclick="saveFavorites()">Favorileri Kaydet</button>
@@ -350,7 +359,7 @@ const defaultFoods = [
  {name:"Tavuk Lavaş Dürüm",type:"adet",carbPerUnit:70}
 ];
 
-const defaultFavorites = ["Ekmek","Makarna","Pilav","Pide","Simit","Patates Kzrtm","Bazlama","Mantı","Börek","Kek"];
+const defaultFavorites = ["Ekmek","Makarna","Pilav","Pide","Simit","Patates Kzrtm","Bazlama","Mantı","Börek","Kek","Yaş Pasta Migros","Patatesli Yumurta","Kaşar Dilim","Mandalina Adet","Muz Yerli Adet"];
 
 let foods = JSON.parse(localStorage.getItem("foods_v2")) || defaultFoods;
 let favorites = JSON.parse(localStorage.getItem("favorites_v2")) || defaultFavorites;
@@ -528,16 +537,42 @@ function confirmDeleteFood(){
 
 function renderFavInputs(){
   const wrap = document.getElementById("fav-inputs");
-  wrap.innerHTML = favorites.map((name,i)=>
-    `<input type="text" value="${name}" data-fav-idx="${i}" style="margin-top:6px">`
-  ).join("");
+  wrap.innerHTML = favorites.map((name,i)=>`
+    <div class="fav-input-wrap">
+      <input type="text" value="${name}" data-fav-idx="${i}" autocomplete="off" oninput="showFavSuggestions(this)">
+      <div class="fav-suggestions"></div>
+    </div>
+  `).join("");
 }
+function showFavSuggestions(input){
+  const box = input.nextElementSibling;
+  const q = input.value.trim().toLocaleLowerCase('tr');
+  if(!q){ box.style.display="none"; return; }
+  const matches = foods.filter(f=>f.name.toLocaleLowerCase('tr').includes(q)).slice(0,6);
+  if(!matches.length){ box.style.display="none"; return; }
+  box.innerHTML = matches.map(f=>
+    `<div data-name="${f.name.replace(/"/g,"&quot;")}">${f.name}</div>`
+  ).join("");
+  box.style.display = "block";
+}
+document.addEventListener("click", (e)=>{
+  if(e.target.closest(".fav-suggestions") && e.target.dataset.name!==undefined){
+    const box = e.target.closest(".fav-suggestions");
+    const input = box.previousElementSibling;
+    input.value = e.target.dataset.name;
+    box.style.display = "none";
+    return;
+  }
+  if(!e.target.closest(".fav-input-wrap")){
+    document.querySelectorAll(".fav-suggestions").forEach(b=>b.style.display="none");
+  }
+});
 function saveFavorites(){
   const inputs = document.querySelectorAll("[data-fav-idx]");
   const names = Array.from(inputs).map(i=>i.value.trim()).filter(Boolean);
   const valid = names.filter(n=>foods.some(f=>f.name===n));
   if(valid.length !== names.length){ alert("Bazı isimler yiyecek listesinde bulunamadı, kontrol edin."); }
-  favorites = valid.slice(0,10);
+  favorites = valid.slice(0,15);
   saveFavoritesToStorage();
   alert("Favoriler kaydedildi");
 }
@@ -668,13 +703,64 @@ function removeScheduleImage(){
 function openScheduleLightbox(){
   if(!settings.scheduleImage) return;
   const overlay = document.createElement("div");
-  overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:2000;display:flex;align-items:center;justify-content:center;padding:14px";
-  overlay.onclick = ()=>overlay.remove();
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:2000;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none";
   const img = document.createElement("img");
   img.src = settings.scheduleImage;
-  img.style.cssText = "max-width:100%;max-height:100%;border-radius:10px";
+  img.style.cssText = "max-width:100%;max-height:100%;border-radius:10px;touch-action:none;will-change:transform;";
   overlay.appendChild(img);
+
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "✕";
+  closeBtn.style.cssText = "position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.18);color:#fff;border:none;width:42px;height:42px;border-radius:21px;font-size:1.2rem;z-index:2001";
+  closeBtn.onclick = ()=>overlay.remove();
+  overlay.appendChild(closeBtn);
+
   document.body.appendChild(overlay);
+
+  // Pinch-zoom ve tek parmakla kaydırma
+  let scale=1, startDist=0, startScale=1;
+  let posX=0, posY=0, startX=0, startY=0, panning=false, lastTap=0;
+
+  function dist(a,b){ return Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY); }
+  function applyTransform(){
+    img.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+  }
+  overlay.addEventListener("touchstart", e=>{
+    if(e.touches.length===2){
+      startDist = dist(e.touches[0], e.touches[1]);
+      startScale = scale;
+      panning = false;
+    } else if(e.touches.length===1){
+      if(scale>1){
+        panning = true;
+        startX = e.touches[0].clientX - posX;
+        startY = e.touches[0].clientY - posY;
+      } else {
+        const now = Date.now();
+        if(now - lastTap < 300){
+          scale = 2.5;
+          posX = 0; posY = 0;
+          applyTransform();
+        }
+        lastTap = now;
+      }
+    }
+  }, {passive:true});
+  overlay.addEventListener("touchmove", e=>{
+    if(e.touches.length===2){
+      const newDist = dist(e.touches[0], e.touches[1]);
+      scale = Math.min(5, Math.max(1, startScale * (newDist/startDist)));
+      if(scale===1){ posX=0; posY=0; }
+      applyTransform();
+    } else if(e.touches.length===1 && panning){
+      posX = e.touches[0].clientX - startX;
+      posY = e.touches[0].clientY - startY;
+      applyTransform();
+    }
+  }, {passive:true});
+  overlay.addEventListener("touchend", e=>{
+    if(e.touches.length===0) panning=false;
+  });
 }
 
 /* =========================================================
@@ -699,6 +785,8 @@ function addFoundFoodToList(){
   const type = document.getElementById("found-type").value;
   const carb = parseFloat(document.getElementById("found-carb").value);
   if(!name || isNaN(carb)){ alert("Yemek adı ve karbonhidrat değerini girin"); return; }
+  const pass = prompt("Yeni yiyeceği listeye eklemek için şifre girin");
+  if(pass !== ADMIN_PASSWORD){ alert("Şifre yanlış"); return; }
   const food = {name, type};
   if(type==="gram") food.carbPerGram = carb/100; else food.carbPerUnit = carb;
   foods.push(food);
@@ -715,7 +803,7 @@ function addFoundFoodToList(){
    ========================================================= */
 if("serviceWorker" in navigator){
   const swCode = `
-    const CACHE_NAME = 'metematik-v7';
+    const CACHE_NAME = 'metematik-v8';
     self.addEventListener('install', e=>{
       self.skipWaiting();
       e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(['./'])));
