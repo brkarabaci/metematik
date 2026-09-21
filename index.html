@@ -12,125 +12,125 @@
   --green:#1e8e5a; --orange:#c9740b; --red:#c1352b;
   --ai:#b5680a; --ai-dark:#8f5106;
   --menu:#3b6fd6; --menu-dark:#2c56ab;
-  --radius:14px;
+  --radius:13px;
 }
 *{box-sizing:border-box}
 html,body{width:100%; max-width:100%; overflow-x:hidden}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-  margin:0; padding:14px 12px 18px;
+  margin:0; padding:10px 10px 8px;
   background:linear-gradient(160deg,var(--bg1),var(--bg2));
   color:var(--ink);
   display:flex; flex-direction:column; align-items:center;
-  padding-top:env(safe-area-inset-top,14px);
-  padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));
+  padding-top:env(safe-area-inset-top,10px);
+  padding-bottom:calc(74px + env(safe-area-inset-bottom,0px));
   min-height:100dvh;
   letter-spacing:-0.01em;
+  text-align:center;
 }
-h1{font-size:1.7rem;margin:2px 0 12px;color:var(--accent-dark);text-align:center;font-weight:800;letter-spacing:-0.02em}
+h1{font-size:1.35rem;margin:2px 0 8px;color:var(--accent-dark);text-align:center;font-weight:800;letter-spacing:-0.02em}
 .card{
-  background:var(--card); border-radius:var(--radius); padding:15px;
+  background:var(--card); border-radius:var(--radius); padding:12px;
   box-shadow:0 4px 14px rgba(15,60,55,0.07);
   border:1px solid var(--line);
-  width:100%; max-width:640px; margin-bottom:12px;
+  width:100%; max-width:640px; margin-bottom:8px;
+  text-align:left;
 }
-.card h2{margin:0 0 10px;font-size:0.95rem;color:var(--accent-dark);font-weight:700}
-#carb-result{font-size:1.9rem;font-weight:800;text-align:center;padding:2px 0}
-#carb-sub{text-align:center;color:var(--muted);font-size:0.85rem;margin-top:-4px}
+.card h2{margin:0 0 8px;font-size:0.9rem;color:var(--accent-dark);font-weight:700;text-align:center}
+#carb-result{font-size:1.6rem;font-weight:800;text-align:center;padding:0}
+#carb-sub{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:-2px}
 
 /* --- Arama + hesaplayıcı --- */
-.calc-row{display:flex; gap:6px; align-items:flex-start; margin-top:10px}
+.calc-row{display:flex; gap:6px; align-items:flex-start; margin-top:8px}
 .search-wrap{position:relative; flex:1.6; min-width:0}
 #food-search{
-  width:100%; padding:10px 10px; font-size:0.93rem;
-  border:1.5px solid var(--line); border-radius:10px; outline:none; background:#fafcfc;
+  width:100%; padding:9px 10px; font-size:0.9rem;
+  border:1.5px solid var(--line); border-radius:9px; outline:none; background:#fafcfc;
 }
 #food-search:focus{border-color:var(--accent); background:#fff}
 #food-suggestions{
   position:absolute; left:0; right:0; top:100%;
   background:#fff; border:1px solid var(--line); border-top:none;
-  border-radius:0 0 10px 10px; max-height:220px; overflow-y:auto;
-  box-shadow:0 8px 16px rgba(0,0,0,0.08); z-index:20; display:none;
+  border-radius:0 0 9px 9px; max-height:180px; overflow-y:auto;
+  box-shadow:0 8px 16px rgba(0,0,0,0.08); z-index:20; display:none; text-align:left;
 }
-#food-suggestions div{padding:9px 12px; cursor:pointer; font-size:0.9rem}
+#food-suggestions div{padding:8px 12px; cursor:pointer; font-size:0.88rem}
 #food-suggestions div:hover, #food-suggestions div.active{background:#eaf4f2}
 #amount-input{
-  flex:1; min-width:0; padding:10px; font-size:0.93rem;
-  border:1.5px solid var(--line); border-radius:10px; background:#fafcfc;
+  flex:1; min-width:0; padding:9px; font-size:0.9rem;
+  border:1.5px solid var(--line); border-radius:9px; background:#fafcfc;
 }
 #amount-input:focus{border-color:var(--accent); background:#fff}
 .selected-food{
-  margin-top:10px; padding:10px 12px; border-radius:10px;
-  background:#eef7f5; display:none; align-items:center; justify-content:space-between; gap:10px;
+  margin-top:8px; padding:8px 10px; border-radius:9px;
+  background:#eef7f5; display:none; align-items:center; justify-content:space-between; gap:8px;
 }
 .selected-food.show{display:flex}
-.selected-food b{font-size:0.98rem}
+.selected-food b{font-size:0.92rem}
 .selected-food small{color:var(--muted)}
 
 .btn{
-  padding:10px 15px; border:none; border-radius:10px; cursor:pointer;
-  background:var(--accent); color:#fff; font-size:0.92rem; font-weight:600; margin-top:10px;
+  padding:9px 14px; border:none; border-radius:9px; cursor:pointer;
+  background:var(--accent); color:#fff; font-size:0.88rem; font-weight:600; margin-top:8px;
 }
 .btn:active{background:var(--accent-dark)}
 .btn.secondary{background:#eef1f2; color:var(--ink)}
 .btn.danger{background:var(--red)}
 .btn.menu-btn{background:var(--menu); width:100%}
 .btn.menu-btn:active{background:var(--menu-dark)}
-.btn.ai-btn{background:var(--ai); width:100%; font-size:0.98rem; padding:12px}
+.btn.ai-btn{background:var(--ai); color:#fff}
 .btn.ai-btn:active{background:var(--ai-dark)}
-.btn-row{display:flex; gap:10px; flex-wrap:wrap}
+.btn-row{display:flex; gap:8px; flex-wrap:wrap}
 
 /* --- Menü listesi --- */
-#menu-list{margin-top:10px}
+#menu-list{margin-top:8px; max-height:110px; overflow-y:auto}
 .menu-item{
   display:flex; justify-content:space-between; align-items:center;
-  padding:8px 10px; border-radius:9px; background:#f6f8f9; margin-top:6px; font-size:0.88rem;
+  padding:6px 9px; border-radius:8px; background:#f6f8f9; margin-top:5px; font-size:0.84rem;
 }
 .menu-item .mi-name{font-weight:600}
-.menu-item .mi-detail{color:var(--muted); font-size:0.78rem}
-.menu-item .mi-remove{background:none;border:none;color:var(--red);font-size:1.1rem;cursor:pointer;padding:0 4px}
+.menu-item .mi-detail{color:var(--muted); font-size:0.74rem}
+.menu-item .mi-remove{background:none;border:none;color:var(--red);font-size:1.05rem;cursor:pointer;padding:0 4px}
 #menu-total{
   display:flex; justify-content:space-between; align-items:center;
-  margin-top:10px; padding:10px 12px; border-radius:10px; background:#eaf0fb; font-weight:800; color:var(--menu-dark);
+  margin-top:8px; padding:8px 10px; border-radius:9px; background:#eaf0fb; font-weight:800; color:var(--menu-dark);
+  font-size:0.9rem;
 }
-#menu-total span:last-child{font-size:1.15rem}
+#menu-total span:last-child{font-size:1.05rem}
 
 /* --- Favoriler --- */
-.fav-grid{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:6px; margin-top:12px}
+.fav-grid{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:5px; margin-top:8px}
 .fav-btn{
-  background:#f6f8f9; border:1px solid var(--line); border-radius:11px;
-  padding:8px 2px; text-align:center; cursor:pointer; font-size:0.72rem; color:var(--accent-dark); font-weight:600;
+  background:#f6f8f9; border:1px solid var(--line); border-radius:10px;
+  padding:6px 2px; text-align:center; cursor:pointer; font-size:0.66rem; color:var(--accent-dark); font-weight:600;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 .fav-btn:active{background:#e2ece9}
-.fav-emoji{font-size:1.25rem; display:block; margin-bottom:2px}
+.fav-emoji{font-size:1.05rem; display:block; margin-bottom:1px}
 
-/* --- Alt satır: Ara + Zamanlayıcı --- */
-.split-row{display:flex; gap:10px; width:100%; max-width:640px}
-.split-row .card{flex:1; margin-bottom:12px}
-@media(max-width:520px){ .split-row{flex-direction:column} }
-.mini-card h2{font-size:0.88rem}
-.divider{border-top:1px solid var(--line); margin:12px 0 10px; padding-top:10px}
+/* --- Yemek Ara kartı --- */
+.search-row{display:flex; gap:6px; margin-top:6px}
+.search-row input, .search-row select{margin-top:0}
+.search-row .qflex2{flex:1.5; min-width:0}
+.search-row .qflex1{flex:1; min-width:0}
+.mini-divider{border-top:1px dashed var(--line); margin:10px 0 8px}
+.mini-label{font-size:0.72rem; color:var(--muted); margin-bottom:2px}
 
-#timer-display{font-size:2rem; font-weight:800; text-align:center; margin:2px 0}
-#timer-minutes{padding:9px; font-size:0.92rem; margin-top:6px}
-.timer-btn-row{display:flex; gap:6px; margin-top:8px}
-.timer-btn-row .btn{flex:1; margin-top:0; padding:9px 4px; font-size:0.82rem}
-#timer-ring{
-  display:none; margin-top:8px; padding:9px; background:#fdeceb; border-radius:9px;
-  text-align:center; color:var(--red); font-weight:700; font-size:0.85rem;
+/* --- Alt buton çubuğu --- */
+.nav-bar{
+  position:fixed; left:0; right:0; bottom:0;
+  padding:7px 8px calc(7px + env(safe-area-inset-bottom,0px));
+  background:#ffffffee; backdrop-filter:blur(6px);
+  display:flex; justify-content:center; gap:5px; box-shadow:0 -4px 16px rgba(0,0,0,0.08);
+  z-index:50;
 }
-.quick-grid{
-  display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px;
-  padding-top:12px; border-top:1px solid var(--line);
+.nav-bar button{
+  flex:1; max-width:140px; background:none; border:none; color:var(--accent-dark);
+  display:flex; flex-direction:column; align-items:center; gap:1px; font-size:0.68rem; font-weight:600;
+  padding:5px 2px; border-radius:9px; cursor:pointer;
 }
-.quick-grid button{
-  background:#f6f8f9; border:1px solid var(--line); color:var(--accent-dark);
-  display:flex; flex-direction:column; align-items:center; gap:2px; font-size:0.76rem; font-weight:600;
-  padding:10px 4px; border-radius:10px; cursor:pointer;
-}
-.quick-grid button:active{background:#eaf4f2}
-.quick-grid .icon{font-size:1.3rem}
+.nav-bar button:active{background:#eaf4f2}
+.nav-bar .icon{font-size:1.25rem}
 
 /* --- Modal --- */
 .modal{
@@ -142,14 +142,15 @@ h1{font-size:1.7rem;margin:2px 0 12px;color:var(--accent-dark);text-align:center
 .modal-content{
   background:#fff; padding:20px; border-radius:18px 18px 0 0;
   width:100%; max-width:640px; max-height:88vh; overflow-y:auto;
+  text-align:left;
 }
 @media(min-width:700px){
   .modal{align-items:center}
   .modal-content{border-radius:16px}
 }
-.modal-content h3{margin-top:0; color:var(--accent-dark)}
+.modal-content h3{margin-top:0; color:var(--accent-dark); text-align:left}
 .close-x{float:right; background:none; border:none; font-size:1.3rem; color:var(--muted); cursor:pointer}
-label{font-size:0.83rem; margin-top:10px; display:block; color:var(--muted)}
+label{font-size:0.83rem; margin-top:10px; display:block; color:var(--muted); text-align:left}
 select,input{
   padding:10px; border-radius:9px; border:1.5px solid var(--line);
   width:100%; margin-top:4px; font-size:1rem; font-family:inherit; background:#fafcfc;
@@ -173,9 +174,9 @@ select:focus,input:focus{border-color:var(--accent); background:#fff; outline:no
 /* Ders programı */
 #schedule-img{width:100%; border-radius:10px; margin-top:10px; display:none; cursor:zoom-in}
 #schedule-empty{color:var(--muted); text-align:center; padding:30px 0}
-#schedule-hint{display:none}
+#schedule-hint{display:none; text-align:center}
 
-.hint{font-size:0.76rem; color:var(--muted); margin-top:8px}
+.hint{font-size:0.76rem; color:var(--muted); margin-top:8px; text-align:left}
 </style>
 </head>
 <body>
@@ -211,49 +212,40 @@ select:focus,input:focus{border-color:var(--accent); background:#fff; outline:no
   <div class="fav-grid" id="fav-grid"></div>
 </div>
 
-<!-- Yemek Ara + Zamanlayıcı -->
-<div class="split-row">
-  <div class="card mini-card">
-    <h2>🔍 Yemek Ara (İnternet)</h2>
-    <label style="margin-top:0">Ne arıyorsunuz?</label>
-    <input id="search-query" type="text" placeholder="örn. 165 gr türlü">
-    <label>Arama motoru</label>
-    <select id="search-engine">
+<!-- Yemek Ara (İnternet) -->
+<div class="card">
+  <h2>🔍 Yemek Ara (İnternet)</h2>
+
+  <div class="search-row">
+    <input id="search-query" class="qflex2" type="text" placeholder="örn. 165 gr türlü">
+    <select id="search-engine" class="qflex1">
       <option value="google">Google</option>
       <option value="yandex">Yandex</option>
     </select>
-    <button class="btn ai-btn" onclick="openWebSearch()">🔍 Aramayı Aç</button>
-
-    <div class="divider">
-      <label style="margin-top:0">Bulduğunuz sonucu girin</label>
-      <input id="found-name" type="text" placeholder="Yemek adı">
-      <select id="found-type">
-        <option value="gram">100 gr üzerinden</option>
-        <option value="adet">Adet üzerinden</option>
-      </select>
-      <input id="found-carb" type="number" min="0" placeholder="Karbonhidrat (g)">
-      <button class="btn" onclick="addFoundFoodToList()">➕ Listeye Ekle ve Seç</button>
-    </div>
   </div>
-  <div class="card mini-card">
-    <h2>⏱ Zamanlayıcı</h2>
-    <div id="timer-display">00:00</div>
-    <label style="margin-top:0">Dakika</label>
-    <input id="timer-minutes" type="number" min="1" placeholder="Dakika girin">
-    <div class="timer-btn-row">
-      <button class="btn" onclick="startTimer()">Başlat</button>
-      <button class="btn secondary" onclick="pauseTimer()">Duraklat</button>
-      <button class="btn danger" onclick="resetTimer()">Sıfırla</button>
-    </div>
-    <div id="timer-ring">🔔 Süre doldu! <button class="btn danger" style="margin-top:6px" onclick="stopAlarm()">Durdur</button></div>
+  <button class="btn ai-btn" style="width:100%" onclick="openWebSearch()">🔍 Aramayı Aç</button>
 
-    <div class="quick-grid">
-      <button onclick="openModal('scheduleModal')"><span class="icon">📅</span>Ders</button>
-      <button onclick="openModal('smsModal')"><span class="icon">💬</span>SMS</button>
-      <button onclick="openModal('settingsModal')"><span class="icon">⚙️</span>Ayarlar</button>
-      <button onclick="openNePisirsem()"><span class="icon">🍳</span>Ne Pişirsem?</button>
-    </div>
+  <div class="mini-divider"></div>
+  <div class="mini-label">Bulduğunuz sonucu girip listeye ekleyin</div>
+  <div class="search-row">
+    <input id="found-name" class="qflex2" type="text" placeholder="Yemek adı">
+    <select id="found-type" class="qflex1">
+      <option value="gram">100 gr</option>
+      <option value="adet">Adet</option>
+    </select>
   </div>
+  <div class="search-row">
+    <input id="found-carb" class="qflex1" type="number" min="0" placeholder="Karbonhidrat (g)">
+    <button class="btn menu-btn" style="flex:1; margin-top:0" onclick="addFoundFoodToList()">➕ Ekle ve Seç</button>
+  </div>
+</div>
+
+<!-- Alt navigasyon -->
+<div class="nav-bar">
+  <button onclick="openModal('scheduleModal')"><span class="icon">📅</span>Ders</button>
+  <button onclick="openModal('smsModal')"><span class="icon">💬</span>SMS</button>
+  <button onclick="openNePisirsem()"><span class="icon">🍳</span>Ne Pişirsem?</button>
+  <button onclick="openModal('settingsModal')"><span class="icon">⚙️</span>Ayarlar</button>
 </div>
 
 <!-- === SMS Komutları Modal === -->
@@ -486,6 +478,7 @@ function renderFavorites(){
     if(n.includes("makarna")||n.includes("mantı")) return "🍝";
     if(n.includes("pilav")) return "🍚";
     if(n.includes("patates")) return "🍟";
+    if(n.includes("börek")) return "🥟";
     if(n.includes("kek")||n.includes("pasta")||n.includes("tatlı")||n.includes("baklava")) return "🍰";
     return "🍽️";
   };
@@ -685,63 +678,6 @@ function openScheduleLightbox(){
 }
 
 /* =========================================================
-   ZAMANLAYICI + ALARM
-   ========================================================= */
-let timerSeconds = 0, timerInterval = null, alarmInterval = null, audioCtx = null;
-
-function updateTimerDisplay(){
-  const m = Math.floor(timerSeconds/60), s = timerSeconds%60;
-  document.getElementById("timer-display").textContent =
-    String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
-}
-function ensureAudio(){
-  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-  if(audioCtx.state==="suspended") audioCtx.resume();
-}
-function beepOnce(){
-  if(!audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = "sine"; osc.frequency.value = 880;
-  gain.gain.value = 0.25;
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.start();
-  osc.stop(audioCtx.currentTime + 0.35);
-}
-function ringAlarm(){
-  document.getElementById("timer-ring").style.display = "block";
-  beepOnce();
-  alarmInterval = setInterval(beepOnce, 700);
-  if(navigator.vibrate) navigator.vibrate([300,150,300,150,300]);
-}
-function stopAlarm(){
-  clearInterval(alarmInterval); alarmInterval=null;
-  document.getElementById("timer-ring").style.display = "none";
-}
-function startTimer(){
-  ensureAudio();
-  if(timerInterval) return;
-  if(timerSeconds<=0){
-    const mins = parseFloat(document.getElementById("timer-minutes").value);
-    if(!mins || mins<=0) return;
-    timerSeconds = Math.round(mins*60);
-  }
-  updateTimerDisplay();
-  timerInterval = setInterval(()=>{
-    timerSeconds--;
-    updateTimerDisplay();
-    if(timerSeconds<=0){
-      clearInterval(timerInterval); timerInterval=null;
-      ringAlarm();
-    }
-  },1000);
-}
-function pauseTimer(){ clearInterval(timerInterval); timerInterval=null; }
-function resetTimer(){
-  pauseTimer(); stopAlarm(); timerSeconds=0; updateTimerDisplay();
-}
-
-/* =========================================================
    YEMEK ARA (internet, anahtarsız)
    ========================================================= */
 function openWebSearch(){
@@ -774,18 +710,36 @@ function addFoundFoodToList(){
 }
 
 /* =========================================================
-   OFFLINE (PWA)
+   OFFLINE (PWA) — ağ önce, önbellek yedek (güncellemelerin
+   telefonda takılı kalmaması için)
    ========================================================= */
 if("serviceWorker" in navigator){
   const swCode = `
-    self.addEventListener('install',e=>{
-      e.waitUntil(caches.open('metematik-v6').then(c=>c.addAll(['./'])));
+    const CACHE_NAME = 'metematik-v7';
+    self.addEventListener('install', e=>{
+      self.skipWaiting();
+      e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(['./'])));
     });
-    self.addEventListener('fetch',e=>{
-      e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));
+    self.addEventListener('activate', e=>{
+      e.waitUntil(
+        caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k))))
+      );
+      self.clients.claim();
+    });
+    self.addEventListener('fetch', e=>{
+      e.respondWith(
+        fetch(e.request).then(res=>{
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then(c=>c.put(e.request, copy));
+          return res;
+        }).catch(()=>caches.match(e.request))
+      );
     });`;
   const blob = new Blob([swCode], {type:'text/javascript'});
   navigator.serviceWorker.register(URL.createObjectURL(blob));
+  navigator.serviceWorker.getRegistrations().then(regs=>{
+    regs.forEach(r=>r.update());
+  });
 }
 </script>
 </body>
