@@ -2,233 +2,417 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
 <title>MeteMatik</title>
-
 <style>
+:root{
+  --bg1:#eef2f6; --bg2:#e7f3f1;
+  --ink:#152A2A; --accent:#0f7a6b; --accent-dark:#0b5c51;
+  --card:#ffffff; --line:#e7ebee; --muted:#6b7a79;
+  --green:#1e8e5a; --orange:#c9740b; --red:#c1352b;
+  --ai:#b5680a; --ai-dark:#8f5106;
+  --menu:#3b6fd6; --menu-dark:#2c56ab;
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{width:100%; max-width:100%; overflow-x:hidden}
 body{
-  font-family: Arial, sans-serif;
-  margin:0;
-  padding:20px;
-  background:linear-gradient(135deg,#e3f2fd,#e0f7fa);
-  color:#004d40;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  margin:0; padding:14px 12px 88px;
+  background:linear-gradient(160deg,var(--bg1),var(--bg2));
+  color:var(--ink);
+  display:flex; flex-direction:column; align-items:center;
+  padding-top:env(safe-area-inset-top,14px);
+  padding-bottom:calc(88px + env(safe-area-inset-bottom,0px));
+  min-height:100dvh;
+  letter-spacing:-0.01em;
 }
-
-h1{
-  font-size:3.2rem;
-  margin-bottom:10px;
-  color:#00695c;
-}
-
+h1{font-size:1.7rem;margin:2px 0 12px;color:var(--accent-dark);text-align:center;font-weight:800;letter-spacing:-0.02em}
 .card{
-  background:white;
-  border-radius:16px;
-  padding:20px;
-  box-shadow:0 8px 25px rgba(0,0,0,0.1);
-  width:100%;
-  max-width:900px;
-  margin-bottom:20px;
+  background:var(--card); border-radius:var(--radius); padding:15px;
+  box-shadow:0 4px 14px rgba(15,60,55,0.07);
+  border:1px solid var(--line);
+  width:100%; max-width:640px; margin-bottom:12px;
+}
+.card h2{margin:0 0 10px;font-size:0.95rem;color:var(--accent-dark);font-weight:700}
+#carb-result{font-size:1.9rem;font-weight:800;text-align:center;padding:2px 0}
+#carb-sub{text-align:center;color:var(--muted);font-size:0.85rem;margin-top:-4px}
+
+/* --- Arama + hesaplayıcı --- */
+.calc-row{display:flex; gap:6px; align-items:flex-start; margin-top:10px}
+.search-wrap{position:relative; flex:1.6; min-width:0}
+#food-search{
+  width:100%; padding:10px 10px; font-size:0.93rem;
+  border:1.5px solid var(--line); border-radius:10px; outline:none; background:#fafcfc;
+}
+#food-search:focus{border-color:var(--accent); background:#fff}
+#food-suggestions{
+  position:absolute; left:0; right:0; top:100%;
+  background:#fff; border:1px solid var(--line); border-top:none;
+  border-radius:0 0 10px 10px; max-height:220px; overflow-y:auto;
+  box-shadow:0 8px 16px rgba(0,0,0,0.08); z-index:20; display:none;
+}
+#food-suggestions div{padding:9px 12px; cursor:pointer; font-size:0.9rem}
+#food-suggestions div:hover, #food-suggestions div.active{background:#eaf4f2}
+#amount-input{
+  flex:1; min-width:0; padding:10px; font-size:0.93rem;
+  border:1.5px solid var(--line); border-radius:10px; background:#fafcfc;
+}
+#amount-input:focus{border-color:var(--accent); background:#fff}
+.selected-food{
+  margin-top:10px; padding:10px 12px; border-radius:10px;
+  background:#eef7f5; display:none; align-items:center; justify-content:space-between; gap:10px;
+}
+.selected-food.show{display:flex}
+.selected-food b{font-size:0.98rem}
+.selected-food small{color:var(--muted)}
+
+.btn{
+  padding:10px 15px; border:none; border-radius:10px; cursor:pointer;
+  background:var(--accent); color:#fff; font-size:0.92rem; font-weight:600; margin-top:10px;
+}
+.btn:active{background:var(--accent-dark)}
+.btn.secondary{background:#eef1f2; color:var(--ink)}
+.btn.danger{background:var(--red)}
+.btn.menu-btn{background:var(--menu); width:100%}
+.btn.menu-btn:active{background:var(--menu-dark)}
+.btn.ai-btn{background:var(--ai); width:100%; font-size:1.02rem; padding:13px}
+.btn.ai-btn:active{background:var(--ai-dark)}
+.btn-row{display:flex; gap:10px; flex-wrap:wrap}
+
+/* --- Menü listesi --- */
+#menu-list{margin-top:10px}
+.menu-item{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:8px 10px; border-radius:9px; background:#f6f8f9; margin-top:6px; font-size:0.88rem;
+}
+.menu-item .mi-name{font-weight:600}
+.menu-item .mi-detail{color:var(--muted); font-size:0.78rem}
+.menu-item .mi-remove{background:none;border:none;color:var(--red);font-size:1.1rem;cursor:pointer;padding:0 4px}
+#menu-total{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-top:10px; padding:10px 12px; border-radius:10px; background:#eaf0fb; font-weight:800; color:var(--menu-dark);
+}
+#menu-total span:last-child{font-size:1.15rem}
+
+/* --- Favoriler --- */
+.fav-grid{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:6px; margin-top:12px}
+.fav-btn{
+  background:#f6f8f9; border:1px solid var(--line); border-radius:11px;
+  padding:8px 2px; text-align:center; cursor:pointer; font-size:0.72rem; color:var(--accent-dark); font-weight:600;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.fav-btn:active{background:#e2ece9}
+.fav-emoji{font-size:1.25rem; display:block; margin-bottom:2px}
+
+/* --- NS kartı --- */
+.ns-row{display:flex; gap:14px; align-items:center; flex-wrap:wrap}
+.ns-bg{font-size:1.8rem; font-weight:800}
+.ns-meta{color:var(--muted); font-size:0.8rem}
+.ns-trend{font-size:1.4rem}
+#ns-spark{width:100%; height:46px; margin-top:6px}
+.status-bars{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
+.status-chip{
+  flex:1; min-width:120px; border-radius:10px; padding:8px 11px;
+  background:#f6f8f9; border-left:4px solid var(--green);
+}
+.status-chip.warn{border-left-color:var(--orange)}
+.status-chip.crit{border-left-color:var(--red)}
+.status-chip .lbl{font-size:0.72rem; color:var(--muted)}
+.status-chip .val{font-size:0.92rem; font-weight:700}
+
+/* --- Alt satır: AI + Zamanlayıcı --- */
+.split-row{display:flex; gap:10px; width:100%; max-width:640px}
+.split-row .card{flex:1; margin-bottom:12px}
+@media(max-width:520px){ .split-row{flex-direction:column} }
+
+.mini-card h2{font-size:0.88rem}
+#home-ai-provider{margin-top:2px; padding:8px; font-size:0.85rem}
+
+#timer-display{font-size:1.85rem; font-weight:800; text-align:center; margin:2px 0}
+#timer-minutes{padding:8px; font-size:0.9rem; margin-top:6px}
+.timer-hint{font-size:0.72rem; color:var(--muted); margin-top:2px}
+.timer-btn-row{display:flex; gap:6px; margin-top:8px}
+.timer-btn-row .btn{flex:1; margin-top:0; padding:9px 4px; font-size:0.82rem}
+#timer-ring{
+  display:none; margin-top:8px; padding:9px; background:#fdeceb; border-radius:9px;
+  text-align:center; color:var(--red); font-weight:700; font-size:0.85rem;
 }
 
-#carb-result{
-  font-size:2.2rem;
-  font-weight:bold;
-  text-align:center;
+/* --- Alt buton çubuğu --- */
+.nav-bar{
+  position:fixed; left:0; right:0; bottom:0;
+  padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+  background:#ffffffee; backdrop-filter:blur(6px);
+  display:flex; justify-content:center; gap:6px; box-shadow:0 -4px 16px rgba(0,0,0,0.08);
+  z-index:50;
 }
-
-#carb-calculator{
-  display:flex;
-  gap:25px;
-  justify-content:center;
-  flex-wrap:wrap;
+.nav-bar button{
+  flex:1; max-width:140px; background:none; border:none; color:var(--accent-dark);
+  display:flex; flex-direction:column; align-items:center; gap:2px; font-size:0.72rem; font-weight:600;
+  padding:6px 2px; border-radius:10px; cursor:pointer;
 }
+.nav-bar button:active{background:#eaf4f2}
+.nav-bar .icon{font-size:1.4rem}
 
-.food-group{
-  min-width:220px;
-}
-
-.food-group-label{
-  font-size:1.3rem;
-  font-weight:bold;
-  margin-bottom:8px;
-  text-align:center;
-}
-
-select,input{
-  padding:8px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  width:100%;
-  margin-top:5px;
-  font-size:1rem;
-}
-
-button{
-  padding:10px 16px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-#adminBtn{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:#00796b;
-  color:white;
-}
-
+/* --- Modal --- */
 .modal{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.55);
-  display:none;
-  justify-content:center;
-  align-items:center;
+  position:fixed; inset:0; background:rgba(10,30,28,0.55);
+  display:none; justify-content:center; align-items:flex-end;
   z-index:999;
 }
-
+.modal.open{display:flex}
 .modal-content{
-  background:white;
-  padding:25px;
-  border-radius:14px;
-  width:360px;
-  max-height:90vh;
-  overflow-y:auto;
+  background:#fff; padding:20px; border-radius:18px 18px 0 0;
+  width:100%; max-width:640px; max-height:88vh; overflow-y:auto;
 }
+@media(min-width:700px){
+  .modal{align-items:center}
+  .modal-content{border-radius:16px}
+}
+.modal-content h3{margin-top:0; color:var(--accent-dark)}
+.close-x{float:right; background:none; border:none; font-size:1.3rem; color:var(--muted); cursor:pointer}
+label{font-size:0.83rem; margin-top:10px; display:block; color:var(--muted)}
+select,input{
+  padding:10px; border-radius:9px; border:1.5px solid var(--line);
+  width:100%; margin-top:4px; font-size:1rem; font-family:inherit; background:#fafcfc;
+}
+select:focus,input:focus{border-color:var(--accent); background:#fff; outline:none}
+.section{margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #eee}
+.section:last-child{border-bottom:none}
+.tag{display:inline-block; padding:2px 9px; border-radius:20px; font-size:0.7rem; font-weight:700; color:#fff}
+.tag.auth{background:var(--red)}
+.tag.noauth{background:var(--green)}
+.duo{display:flex; gap:8px}
+.duo>div{flex:1}
 
-.section{
-  margin-bottom:25px;
-  padding-bottom:15px;
-  border-bottom:1px solid #eee;
-}
+/* SMS tablosu */
+.sms-group{margin-bottom:14px; border-radius:10px; overflow:hidden; border:1px solid var(--line)}
+.sms-group-h{padding:8px 12px; font-weight:700; color:#fff; font-size:0.88rem}
+.sms-row{padding:9px 12px; border-top:1px solid #f0f0f0; font-size:0.85rem}
+.sms-row code{background:#f1f1f1; padding:2px 6px; border-radius:5px; font-weight:700}
+.sms-row p{margin:4px 0 0; color:var(--muted)}
 
-.section h3{
-  margin-top:0;
-}
+/* Ders programı */
+#schedule-img{width:100%; border-radius:10px; margin-top:10px; display:none}
+#schedule-empty{color:var(--muted); text-align:center; padding:30px 0}
 
-label{
-  font-size:0.9rem;
-  margin-top:8px;
-  display:block;
-}
-
-.admin-buttons{
-  display:flex;
-  gap:10px;
-  margin-top:15px;
-}
-
-.delete-row{
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-
-@media(max-width:700px){
-  #carb-calculator{flex-direction:column}
-}
+.hint{font-size:0.76rem; color:var(--muted); margin-top:8px}
 </style>
 </head>
-
 <body>
 
 <h1>MeteMatik</h1>
 
+<!-- NS kartı -->
+<div class="card" id="ns-card">
+  <h2>📡 Mete</h2>
+  <div class="ns-row">
+    <div>
+      <div class="ns-bg" id="ns-bg">--</div>
+      <div class="ns-meta" id="ns-meta">Yükleniyor…</div>
+    </div>
+    <div class="ns-trend" id="ns-trend"></div>
+  </div>
+  <svg id="ns-spark" viewBox="0 0 300 60" preserveAspectRatio="none"></svg>
+  <div class="status-bars">
+    <div class="status-chip" id="sensor-chip">
+      <div class="lbl">🩹 Sensör</div>
+      <div class="val" id="sensor-val">Yükleniyor…</div>
+    </div>
+    <div class="status-chip" id="pump-chip">
+      <div class="lbl">💧 Pompa/Kanül</div>
+      <div class="val" id="pump-val">Yükleniyor…</div>
+    </div>
+  </div>
+</div>
+
+<!-- Karbonhidrat hesaplayıcı -->
 <div class="card">
-  <div id="carb-result">Karbonhidrat: 0</div>
+  <div id="carb-result">Karbonhidrat: 0 g</div>
+  <div id="carb-sub"></div>
+
+  <div class="calc-row">
+    <div class="search-wrap">
+      <input id="food-search" type="text" placeholder="🔍 Yiyecek ara" autocomplete="off">
+      <div id="food-suggestions"></div>
+    </div>
+    <input id="amount-input" type="number" min="0" placeholder="Miktar">
+  </div>
+
+  <div class="selected-food" id="selected-food-box">
+    <div><b id="selected-food-name"></b><br><small id="selected-food-info"></small></div>
+    <button class="btn secondary" style="margin:0" onclick="clearSelection()">✕</button>
+  </div>
+
+  <button class="btn menu-btn" onclick="addToMenu()">➕ Menüye Ekle</button>
+
+  <div id="menu-list"></div>
+  <div id="menu-total" style="display:none">
+    <span>Menü Toplamı</span><span id="menu-total-val">0 g</span>
+  </div>
+  <button class="btn secondary" id="menu-clear-btn" style="display:none;width:100%" onclick="clearMenu()">🗑 Menüyü Temizle</button>
+
+  <div class="fav-grid" id="fav-grid"></div>
 </div>
 
-<div class="card" id="carb-calculator">
-
-<div class="food-group">
-<div class="food-group-label">🍕 Pizza</div>
-<select id="pizza-select"></select>
-<input id="pizza-amount" type="number" min="0" placeholder="Miktar">
+<!-- AI + Zamanlayıcı -->
+<div class="split-row">
+  <div class="card mini-card">
+    <h2>🤖 AI ile Yemek Bul</h2>
+    <label style="margin-top:0">Arama motoru</label>
+    <select id="home-ai-provider" onchange="saveAiProviderChoice()">
+      <option value="anthropic">Claude</option>
+      <option value="openai">ChatGPT</option>
+      <option value="gemini">Gemini</option>
+    </select>
+    <button class="btn ai-btn" onclick="openModal('aiModal')">🤖 AI Hesapla</button>
+  </div>
+  <div class="card mini-card">
+    <h2>⏱ Zamanlayıcı</h2>
+    <div id="timer-display">00:00</div>
+    <label style="margin-top:0">Dakika</label>
+    <input id="timer-minutes" type="number" min="1">
+    <div class="timer-hint" id="timer-hint">Şekere göre otomatik dolar, isterseniz değiştirin</div>
+    <div class="timer-btn-row">
+      <button class="btn" onclick="startTimer()">Başlat</button>
+      <button class="btn secondary" onclick="pauseTimer()">Duraklat</button>
+      <button class="btn danger" onclick="resetTimer()">Sıfırla</button>
+    </div>
+    <div id="timer-ring">🔔 Süre doldu! <button class="btn danger" style="margin-top:6px" onclick="stopAlarm()">Durdur</button></div>
+  </div>
 </div>
 
-<div class="food-group">
-<div class="food-group-label">🍭 Şeker</div>
-<select id="sugar-select"></select>
-<input id="sugar-amount" type="number" min="0" placeholder="Miktar">
+<!-- Alt navigasyon -->
+<div class="nav-bar">
+  <button onclick="openModal('smsModal')"><span class="icon">💬</span>SMS</button>
+  <button onclick="openModal('scheduleModal')"><span class="icon">📅</span>Ders</button>
+  <button onclick="openModal('settingsModal')"><span class="icon">⚙️</span>Ayarlar</button>
 </div>
 
-<div class="food-group">
-<div class="food-group-label">🌮 Taco</div>
-<select id="taco-select"></select>
-<input id="taco-amount" type="number" min="0" placeholder="Miktar">
-</div>
-
-</div>
-
-<button id="adminBtn">⚙ Yiyecek Yönet</button>
-
-<div class="modal" id="adminModal">
+<!-- === AI Yemek Arama Modal === -->
+<div class="modal" id="aiModal">
   <div class="modal-content">
+    <button class="close-x" onclick="closeModal('aiModal')">✕</button>
+    <h3>🤖 Bilinmeyen Yemeği Bul</h3>
+    <p class="hint">Yemeğin adını yazın veya fotoğrafını yükleyin; yapay zeka 100g başına (veya adet başına) tahmini karbonhidrat değerini versin.</p>
+
+    <label>Yemek adı (opsiyonel)</label>
+    <input id="ai-name" type="text" placeholder="örn. mercimek çorbası">
+
+    <label>Fotoğraf (opsiyonel)</label>
+    <input id="ai-photo" type="file" accept="image/*" capture="environment">
+
+    <button class="btn" onclick="runAiSearch()">Yemeği Bul</button>
+    <div id="ai-status" class="hint"></div>
+
+    <div id="ai-result" style="display:none;margin-top:14px;padding:12px;background:#eef7f5;border-radius:10px">
+      <b id="ai-result-name"></b>
+      <div class="hint" id="ai-result-basis"></div>
+      <label>Miktar</label>
+      <input id="ai-result-amount" type="number" min="0" placeholder="gr veya adet" oninput="updateAiTotal()">
+      <div id="ai-result-total" style="font-weight:700;margin-top:8px"></div>
+      <button class="btn" onclick="addAiFoodToList()">➕ Listeye Ekle ve Seç</button>
+    </div>
+  </div>
+</div>
+
+<!-- === SMS Komutları Modal === -->
+<div class="modal" id="smsModal">
+  <div class="modal-content">
+    <button class="close-x" onclick="closeModal('smsModal')">✕</button>
+    <h3>💬 AAPS SMS Komutları</h3>
+    <p class="hint">Kod onayı gerektiren komutlarda: authenticator uygulamasındaki 6 haneli kod + PIN, boşluksuz birleştirilip gönderilir.</p>
+    <div id="sms-list"></div>
+  </div>
+</div>
+
+<!-- === Ders Programı Modal === -->
+<div class="modal" id="scheduleModal">
+  <div class="modal-content">
+    <button class="close-x" onclick="closeModal('scheduleModal')">✕</button>
+    <h3>📅 Mete'nin Ders Programı</h3>
+    <div id="schedule-empty">Henüz bir ders programı resmi yüklenmedi.</div>
+    <img id="schedule-img">
+    <label>Yeni resim yükle / değiştir</label>
+    <input id="schedule-file" type="file" accept="image/*">
+    <div class="btn-row">
+      <button class="btn" onclick="saveScheduleImage()">Kaydet</button>
+      <button class="btn danger" onclick="removeScheduleImage()">Kaldır</button>
+    </div>
+  </div>
+</div>
+
+<!-- === Ayarlar Modal === -->
+<div class="modal" id="settingsModal">
+  <div class="modal-content">
+    <button class="close-x" onclick="closeModal('settingsModal')">✕</button>
+    <h3>⚙️ Ayarlar</h3>
 
     <div class="section">
-      <h3>➕ Yeni Yiyecek Ekle</h3>
+      <h4>🩹 Sensör / 💧 Pompa Kullanım Süresi</h4>
+      <p class="hint">Başlangıç tarihi Nightscout'tan otomatik alınır (Sensor Start / Site Change kayıtları). Burada yalnızca ne kadar süre kullanıldığını belirtin.</p>
+      <label>Sensör süresi</label>
+      <div class="duo">
+        <div><input id="set-sensor-days" type="number" min="0" placeholder="gün" value="10"></div>
+        <div><input id="set-sensor-hours" type="number" min="0" max="23" placeholder="saat" value="12"></div>
+      </div>
+      <label>Pompa/kanül süresi</label>
+      <div class="duo">
+        <div><input id="set-pump-days" type="number" min="0" placeholder="gün" value="3"></div>
+        <div><input id="set-pump-hours" type="number" min="0" max="23" placeholder="saat" value="8"></div>
+      </div>
+      <button class="btn" onclick="saveTrackingSettings()">Kaydet</button>
+    </div>
 
+    <div class="section">
+      <h4>🤖 AI API Anahtarı</h4>
+      <p class="hint">Arama motoru seçimi artık ana sayfada. Burada yalnızca API anahtarınızı girin — anahtar yalnızca bu telefonun tarayıcısında (localStorage) saklanır. Sayfa herkese açık olduğu için düşük limitli bir anahtar kullanmanız önerilir.</p>
+      <label>API Anahtarı</label>
+      <input id="set-ai-key" type="password" placeholder="API anahtarınız">
+      <button class="btn" onclick="saveAiSettings()">Kaydet</button>
+    </div>
+
+    <div class="section">
+      <h4>➕ Yiyecek Ekle</h4>
       <label>Yiyecek adı</label>
       <input id="newName">
-
-      <label>Grup</label>
-      <select id="newGroup">
-        <option value="pizza">Pizza</option>
-        <option value="sugar">Şeker</option>
-        <option value="taco">Taco</option>
-      </select>
-
       <label>Hesaplama türü</label>
       <select id="newType">
         <option value="gram">100 gr üzerinden</option>
         <option value="adet">Adet üzerinden</option>
       </select>
-
-      <label id="valueLabel">Karbonhidrat</label>
+      <label id="valueLabel">Karbonhidrat (100gr için)</label>
       <input id="newCarb" type="number" min="0">
-
-      <button onclick="confirmAddFood()">Yiyeceği Ekle</button>
+      <button class="btn" onclick="confirmAddFood()">Yiyeceği Ekle</button>
     </div>
-
 
     <div class="section">
-      <h3>🗑 Yiyecek Sil</h3>
-
-      <label>Grup</label>
-      <select id="deleteGroup" onchange="populateDeleteList()">
-        <option value="pizza">Pizza</option>
-        <option value="sugar">Şeker</option>
-        <option value="taco">Taco</option>
-      </select>
-
+      <h4>🗑 Yiyecek Sil</h4>
       <label>Yiyecek</label>
       <select id="deleteFood"></select>
-
-      <button onclick="confirmDeleteFood()">Sil</button>
+      <button class="btn danger" onclick="confirmDeleteFood()">Sil</button>
     </div>
 
-
-    <button onclick="closeAdmin()">Kapat</button>
+    <div class="section">
+      <h4>⭐ Favori 5</h4>
+      <p class="hint">Ana sayfadaki hızlı erişim butonları. Yiyecek adını yazın.</p>
+      <div id="fav-inputs"></div>
+      <button class="btn" onclick="saveFavorites()">Favorileri Kaydet</button>
+    </div>
   </div>
 </div>
 
 <script>
+/* =========================================================
+   VERİ
+   ========================================================= */
+const ADMIN_PASSWORD = "omurmete";
+const NS_URL = "https://mete.10be.de";
 
-const ADMIN_PASSWORD="omurmete";
-
-const defaultFoods={
-pizza:[
+const defaultFoods = [
  {name:"Pide",type:"gram",carbPerGram:0.4},
- {name:"Pişi",type:"gram",carbPerGram:0.4}
-],
-sugar:[
+ {name:"Pişi",type:"gram",carbPerGram:0.4},
  {name:"Baklava Cevizli Dilim",type:"adet",carbPerUnit:15},
  {name:"Baklava Fıstıklı Dilim",type:"adet",carbPerUnit:20},
  {name:"Dondurma Top",type:"adet",carbPerUnit:25},
@@ -243,9 +427,7 @@ sugar:[
  {name:"Pasta Pastaban",type:"gram",carbPerGram:0.5},
  {name:"Puding (1 kase)",type:"adet",carbPerUnit:15},
  {name:"Waffle Pastanecim Adet",type:"adet",carbPerUnit:50},
- {name:"Yaş Pasta Migros",type:"gram",carbPerGram:0.45}
-],
-taco:[
+ {name:"Yaş Pasta Migros",type:"gram",carbPerGram:0.45},
  {name:"Bazlama",type:"gram",carbPerGram:0.5},
  {name:"Börek",type:"gram",carbPerGram:0.2},
  {name:"Ekmek",type:"gram",carbPerGram:0.6},
@@ -259,147 +441,658 @@ taco:[
  {name:"Salam Dilim",type:"adet",carbPerUnit:2.5},
  {name:"Simit",type:"gram",carbPerGram:0.45},
  {name:"Tavuk Lavaş Dürüm",type:"adet",carbPerUnit:70}
-]
-};
+];
 
-let foods=JSON.parse(localStorage.getItem("foods"))||defaultFoods;
+const defaultFavorites = ["Ekmek","Makarna","Pilav","Pide","Simit"];
 
-function saveFoods(){
- localStorage.setItem("foods",JSON.stringify(foods));
- renderAll();
-}
+let foods = JSON.parse(localStorage.getItem("foods_v2")) || defaultFoods;
+let favorites = JSON.parse(localStorage.getItem("favorites_v2")) || defaultFavorites;
+let settings = JSON.parse(localStorage.getItem("mm_settings")) || {};
+let menu = JSON.parse(localStorage.getItem("current_menu_v1")) || [];
+let selectedFoodIndex = null;
+let aiFoodResult = null;
+let lastSgv = null;
 
-function sortFoods(arr){
- return arr.sort((a,b)=>a.name.localeCompare(b.name,'tr'));
-}
+function saveFoods(){ localStorage.setItem("foods_v2", JSON.stringify(foods)); renderAll(); }
+function saveFavoritesToStorage(){ localStorage.setItem("favorites_v2", JSON.stringify(favorites)); renderFavorites(); }
+function saveSettings(){ localStorage.setItem("mm_settings", JSON.stringify(settings)); }
+function saveMenu(){ localStorage.setItem("current_menu_v1", JSON.stringify(menu)); renderMenu(); }
 
-function populateSelect(id,list){
- const sel=document.getElementById(id);
- sel.innerHTML="<option value=''>Seç</option>";
- sortFoods(list).forEach((f,i)=>{
-   const o=document.createElement("option");
-   o.value=i;
-   o.textContent=f.name;
-   sel.appendChild(o);
- });
-}
+/* =========================================================
+   ARAMA + HESAPLAYICI
+   ========================================================= */
+const searchInput = document.getElementById("food-search");
+const suggBox = document.getElementById("food-suggestions");
 
-function renderAll(){
- populateSelect("pizza-select",foods.pizza);
- populateSelect("sugar-select",foods.sugar);
- populateSelect("taco-select",foods.taco);
- populateDeleteList();
-}
-
-renderAll();
-
-function calcGroup(group,selectId,inputId){
- const index=document.getElementById(selectId).value;
- const amount=parseFloat(document.getElementById(inputId).value);
- if(index===""||!amount)return 0;
- const food=foods[group][index];
- if(food.type==="gram")return amount*food.carbPerGram;
- if(food.type==="adet")return amount*food.carbPerUnit;
- return 0;
-}
-
-function calculate(){
- let total=0;
- total+=calcGroup("pizza","pizza-select","pizza-amount");
- total+=calcGroup("sugar","sugar-select","sugar-amount");
- total+=calcGroup("taco","taco-select","taco-amount");
- document.getElementById("carb-result").textContent="Karbonhidrat: "+Math.round(total);
-}
-
-["pizza-select","pizza-amount","sugar-select","sugar-amount","taco-select","taco-amount"].forEach(id=>{
- document.getElementById(id).addEventListener("input",calculate);
+searchInput.addEventListener("input", ()=>{
+  const q = searchInput.value.trim().toLocaleLowerCase('tr');
+  if(!q){ suggBox.style.display="none"; return; }
+  const matches = foods
+    .map((f,i)=>({f,i}))
+    .filter(x=>x.f.name.toLocaleLowerCase('tr').includes(q))
+    .slice(0,8);
+  if(!matches.length){ suggBox.innerHTML = "<div style='color:#888'>Sonuç yok</div>"; suggBox.style.display="block"; return; }
+  suggBox.innerHTML = matches.map(x=>
+    `<div onclick="selectFood(${x.i})">${x.f.name}</div>`
+  ).join("");
+  suggBox.style.display="block";
+});
+document.addEventListener("click",(e)=>{
+  if(!e.target.closest(".search-wrap")) suggBox.style.display="none";
 });
 
+function selectFood(index){
+  selectedFoodIndex = index;
+  const f = foods[index];
+  document.getElementById("selected-food-name").textContent = f.name;
+  document.getElementById("selected-food-info").textContent =
+    f.type==="gram" ? `100g = ${Math.round(f.carbPerGram*100)}g KH` : `1 adet = ${f.carbPerUnit}g KH`;
+  document.getElementById("selected-food-box").classList.add("show");
+  searchInput.value = "";
+  suggBox.style.display = "none";
+  document.getElementById("amount-input").focus();
+  calculate();
+}
+function clearSelection(){
+  selectedFoodIndex = null;
+  document.getElementById("selected-food-box").classList.remove("show");
+  document.getElementById("amount-input").value = "";
+  calculate();
+}
+function currentCarb(){
+  const amount = parseFloat(document.getElementById("amount-input").value);
+  if(selectedFoodIndex===null || !amount) return 0;
+  const f = foods[selectedFoodIndex];
+  return f.type==="gram" ? amount*f.carbPerGram : amount*f.carbPerUnit;
+}
+function calculate(){
+  const amount = parseFloat(document.getElementById("amount-input").value);
+  let sub = "";
+  if(selectedFoodIndex!==null && amount){
+    const f = foods[selectedFoodIndex];
+    sub = `${f.name} · ${amount}${f.type==="gram"?"g":" adet"}`;
+  }
+  document.getElementById("carb-result").textContent = "Karbonhidrat: " + Math.round(currentCarb()) + " g";
+  document.getElementById("carb-sub").textContent = sub;
+}
+document.getElementById("amount-input").addEventListener("input", calculate);
 
+/* =========================================================
+   MENÜ
+   ========================================================= */
+function addToMenu(){
+  const amount = parseFloat(document.getElementById("amount-input").value);
+  if(selectedFoodIndex===null || !amount){ alert("Önce bir yiyecek seçip miktar girin"); return; }
+  const f = foods[selectedFoodIndex];
+  menu.push({
+    name: f.name,
+    amount: amount,
+    unit: f.type==="gram"?"g":"adet",
+    carb: Math.round(currentCarb())
+  });
+  saveMenu();
+  clearSelection();
+}
+function removeMenuItem(i){
+  menu.splice(i,1);
+  saveMenu();
+}
+function clearMenu(){
+  menu = [];
+  saveMenu();
+}
+function renderMenu(){
+  const wrap = document.getElementById("menu-list");
+  const totalBox = document.getElementById("menu-total");
+  const clearBtn = document.getElementById("menu-clear-btn");
+  wrap.innerHTML = menu.map((m,i)=>`
+    <div class="menu-item">
+      <div><div class="mi-name">${m.name}</div><div class="mi-detail">${m.amount} ${m.unit} · ${m.carb} g KH</div></div>
+      <button class="mi-remove" onclick="removeMenuItem(${i})">✕</button>
+    </div>
+  `).join("");
+  if(menu.length){
+    const total = menu.reduce((s,m)=>s+m.carb,0);
+    document.getElementById("menu-total-val").textContent = total + " g";
+    totalBox.style.display = "flex";
+    clearBtn.style.display = "block";
+  } else {
+    totalBox.style.display = "none";
+    clearBtn.style.display = "none";
+  }
+}
 
-// ADMIN
+/* =========================================================
+   FAVORİLER
+   ========================================================= */
+function renderFavorites(){
+  const grid = document.getElementById("fav-grid");
+  const emojiFor = n=>{
+    n=n.toLocaleLowerCase('tr');
+    if(n.includes("ekmek")||n.includes("pide")||n.includes("simit")||n.includes("bazlama")) return "🍞";
+    if(n.includes("makarna")||n.includes("mantı")) return "🍝";
+    if(n.includes("pilav")) return "🍚";
+    if(n.includes("patates")) return "🍟";
+    if(n.includes("kek")||n.includes("pasta")||n.includes("tatlı")||n.includes("baklava")) return "🍰";
+    return "🍽️";
+  };
+  grid.innerHTML = favorites.map(name=>{
+    const idx = foods.findIndex(f=>f.name===name);
+    if(idx===-1) return "";
+    return `<div class="fav-btn" onclick="selectFood(${idx})">
+      <span class="fav-emoji">${emojiFor(name)}</span>${name}
+    </div>`;
+  }).join("");
+}
 
-document.getElementById("adminBtn").onclick=()=>{
- document.getElementById("adminModal").style.display="flex";
+/* =========================================================
+   AYARLAR — Yiyecek yönetimi
+   ========================================================= */
+function sortedFoods(){ return foods.map((f,i)=>({f,i})).sort((a,b)=>a.f.name.localeCompare(b.f.name,'tr')); }
+
+function populateDeleteList(){
+  const sel = document.getElementById("deleteFood");
+  sel.innerHTML = sortedFoods().map(x=>`<option value="${x.i}">${x.f.name}</option>`).join("");
+}
+
+function confirmAddFood(){
+  const name = document.getElementById("newName").value.trim();
+  const type = document.getElementById("newType").value;
+  const carb = parseFloat(document.getElementById("newCarb").value);
+  if(!name || isNaN(carb)){ alert("Bilgileri doldurun"); return; }
+  const pass = prompt("Eklemek için şifre girin");
+  if(pass !== ADMIN_PASSWORD){ alert("Şifre yanlış"); return; }
+  const food = {name, type};
+  if(type==="gram") food.carbPerGram = carb/100; else food.carbPerUnit = carb;
+  foods.push(food);
+  saveFoods();
+  document.getElementById("newName").value="";
+  document.getElementById("newCarb").value="";
+  alert("Eklendi");
+}
+function confirmDeleteFood(){
+  const index = document.getElementById("deleteFood").value;
+  if(index==="") return;
+  const pass = prompt("Silmek için şifre girin");
+  if(pass !== ADMIN_PASSWORD){ alert("Şifre yanlış"); return; }
+  foods.splice(index,1);
+  saveFoods();
+  alert("Silindi");
+}
+
+function renderFavInputs(){
+  const wrap = document.getElementById("fav-inputs");
+  wrap.innerHTML = favorites.map((name,i)=>
+    `<input type="text" value="${name}" data-fav-idx="${i}" style="margin-top:6px">`
+  ).join("");
+}
+function saveFavorites(){
+  const inputs = document.querySelectorAll("[data-fav-idx]");
+  const names = Array.from(inputs).map(i=>i.value.trim()).filter(Boolean);
+  const valid = names.filter(n=>foods.some(f=>f.name===n));
+  if(valid.length !== names.length){ alert("Bazı isimler yiyecek listesinde bulunamadı, kontrol edin."); }
+  favorites = valid.slice(0,5);
+  saveFavoritesToStorage();
+  alert("Favoriler kaydedildi");
+}
+
+function renderAll(){ populateDeleteList(); renderFavorites(); renderFavInputs(); renderMenu(); }
+renderAll();
+
+/* =========================================================
+   MODAL YARDIMCI
+   ========================================================= */
+function openModal(id){
+  document.getElementById(id).classList.add("open");
+  if(id==="smsModal") renderSmsCommands();
+  if(id==="scheduleModal") renderSchedule();
+  if(id==="settingsModal") loadSettingsIntoForm();
+}
+function closeModal(id){ document.getElementById(id).classList.remove("open"); }
+
+/* =========================================================
+   SENSÖR / POMPA TAKİBİ (başlangıç NS'den, süre ayarlardan)
+   ========================================================= */
+let nsSensorStart = null;
+let nsPumpStart = null;
+
+function loadSettingsIntoForm(){
+  document.getElementById("set-sensor-days").value = settings.sensorDays ?? 10;
+  document.getElementById("set-sensor-hours").value = settings.sensorExtraHours ?? 12;
+  document.getElementById("set-pump-days").value = settings.pumpDays ?? 3;
+  document.getElementById("set-pump-hours").value = settings.pumpExtraHours ?? 8;
+  if(settings.aiKey) document.getElementById("set-ai-key").value = settings.aiKey;
+}
+function saveTrackingSettings(){
+  settings.sensorDays = parseFloat(document.getElementById("set-sensor-days").value) || 0;
+  settings.sensorExtraHours = parseFloat(document.getElementById("set-sensor-hours").value) || 0;
+  settings.pumpDays = parseFloat(document.getElementById("set-pump-days").value) || 0;
+  settings.pumpExtraHours = parseFloat(document.getElementById("set-pump-hours").value) || 0;
+  saveSettings();
+  renderTrackingStatus();
+  alert("Kaydedildi");
+}
+function saveAiSettings(){
+  settings.aiKey = document.getElementById("set-ai-key").value.trim();
+  saveSettings();
+  alert("Kaydedildi");
+}
+function saveAiProviderChoice(){
+  settings.aiProvider = document.getElementById("home-ai-provider").value;
+  saveSettings();
+}
+
+function fmtRemaining(ms){
+  if(ms<=0) return {text:"Değiştirilmeli!", cls:"crit"};
+  const h = ms/3600000;
+  if(h < 24) return {text: Math.round(h)+" saat kaldı", cls:"warn"};
+  return {text: Math.floor(h/24)+" gün "+Math.round(h%24)+" saat kaldı", cls:""};
+}
+function sensorDurationHours(){ return (settings.sensorDays ?? 10)*24 + (settings.sensorExtraHours ?? 12); }
+function pumpDurationHours(){ return (settings.pumpDays ?? 3)*24 + (settings.pumpExtraHours ?? 8); }
+
+function renderTrackingStatus(){
+  const sChip = document.getElementById("sensor-chip");
+  const sVal = document.getElementById("sensor-val");
+  const pChip = document.getElementById("pump-chip");
+  const pVal = document.getElementById("pump-val");
+
+  if(nsSensorStart){
+    const end = nsSensorStart + sensorDurationHours()*3600000;
+    const r = fmtRemaining(end - Date.now());
+    sVal.textContent = r.text;
+    sChip.className = "status-chip " + r.cls;
+  } else { sVal.textContent = "NS'de kayıt yok"; sChip.className="status-chip"; }
+
+  if(nsPumpStart){
+    const end = nsPumpStart + pumpDurationHours()*3600000;
+    const r = fmtRemaining(end - Date.now());
+    pVal.textContent = r.text;
+    pChip.className = "status-chip " + r.cls;
+  } else { pVal.textContent = "NS'de kayıt yok"; pChip.className="status-chip"; }
+}
+setInterval(renderTrackingStatus, 60000);
+
+/* =========================================================
+   NIGHTSCOUT VERİLERİ
+   ========================================================= */
+const trendArrow = {
+  "Flat":"→","FortyFiveUp":"↗","FortyFiveDown":"↘",
+  "SingleUp":"↑","SingleDown":"↓","DoubleUp":"⇈","DoubleDown":"⇊",
+  "NOT COMPUTABLE":"", "NONE":""
 };
 
-function closeAdmin(){
- document.getElementById("adminModal").style.display="none";
+async function loadNightscout(){
+  try{
+    const res = await fetch(`${NS_URL}/api/v1/entries/sgv.json?count=24`);
+    const data = await res.json();
+    if(!data.length){ document.getElementById("ns-meta").textContent="Veri yok"; return; }
+    const last = data[0];
+    lastSgv = last.sgv;
+    document.getElementById("ns-bg").textContent = last.sgv;
+    document.getElementById("ns-trend").textContent = trendArrow[last.direction] || "";
+    const mins = Math.round((Date.now() - last.date)/60000);
+    document.getElementById("ns-meta").textContent = `${mins} dk önce`;
+    drawSpark(data.slice().reverse().map(d=>d.sgv));
+    updateTimerMinutesFromSugar();
+  }catch(e){
+    document.getElementById("ns-meta").textContent = "Bağlanılamadı";
+  }
+}
+function drawSpark(values){
+  const svg = document.getElementById("ns-spark");
+  if(!values.length) return;
+  const min = Math.min(...values,70), max = Math.max(...values,180);
+  const w=300,h=56,pad=4;
+  const pts = values.map((v,i)=>{
+    const x = pad + i*(w-2*pad)/(values.length-1||1);
+    const y = h-pad - ( (v-min)/(max-min||1) )*(h-2*pad);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+  svg.innerHTML = `<polyline points="${pts}" fill="none" stroke="#0f7a6b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
 }
 
+const SENSOR_EVENTS = ["Sensor Start","Sensor Change"];
+const PUMP_EVENTS = ["Site Change","Cannula Change","Pump Site Change"];
 
-// ADD FOOD
-function confirmAddFood(){
- const name=document.getElementById("newName").value.trim();
- const group=document.getElementById("newGroup").value;
- const type=document.getElementById("newType").value;
- const carb=parseFloat(document.getElementById("newCarb").value);
-
- if(!name||isNaN(carb)){
-   alert("Bilgileri doldurun");
-   return;
- }
-
- const pass=prompt("Eklemek için şifre girin");
- if(pass!==ADMIN_PASSWORD){
-   alert("Şifre yanlış");
-   return;
- }
-
- const food={name,type};
- if(type==="gram")food.carbPerGram=carb/100;
- if(type==="adet")food.carbPerUnit=carb;
-
- foods[group].push(food);
- saveFoods();
- alert("Eklendi");
+async function loadNightscoutEvents(){
+  try{
+    const res = await fetch(`${NS_URL}/api/v1/treatments.json?count=200`);
+    const data = await res.json();
+    let sTime = null, pTime = null;
+    data.forEach(t=>{
+      const t2 = new Date(t.created_at || t.date).getTime();
+      if(SENSOR_EVENTS.includes(t.eventType) && (!sTime || t2>sTime)) sTime = t2;
+      if(PUMP_EVENTS.includes(t.eventType) && (!pTime || t2>pTime)) pTime = t2;
+    });
+    nsSensorStart = sTime;
+    nsPumpStart = pTime;
+  }catch(e){
+    nsSensorStart = null; nsPumpStart = null;
+  }
+  renderTrackingStatus();
 }
 
+loadNightscout();
+loadNightscoutEvents();
+setInterval(loadNightscout, 5*60000);
+setInterval(loadNightscoutEvents, 5*60000);
 
-// DELETE FOOD
-function populateDeleteList(){
- const group=document.getElementById("deleteGroup").value;
- const sel=document.getElementById("deleteFood");
- sel.innerHTML="";
- sortFoods(foods[group]).forEach((f,i)=>{
-   const o=document.createElement("option");
-   o.value=i;
-   o.textContent=f.name;
-   sel.appendChild(o);
- });
+/* =========================================================
+   SMS KOMUTLARI
+   ========================================================= */
+const smsGroups = [
+ {title:"📊 CGM (Glukoz)", color:"#0277bd", items:[
+   ["BG","Hayır","Son glukoz, değişim yönü ve aktif insülini (IOB) gösterir."],
+   ["CAL 5.6/90","Evet","CGM'i belirtilen değerle kalibre eder (AAPS'te kurulu olmalı)."]
+ ]},
+ {title:"💧 Pompa", color:"#546e7a", items:[
+   ["PUMP","Hayır","Pompa durumu: bağlantı, geçici bazal, IOB, rezervuar, pil."],
+   ["PUMP DISCONNECT 30","Evet","Pompayı 30 dk bağlantısız bırakır."],
+   ["PUMP CONNECT","Evet","Pompayı yeniden bağlar."]
+ ]},
+ {title:"⚙️ Bazal", color:"#ef6c00", items:[
+   ["BASAL 0.3","Evet","0.3 U/saat, 30 dk geçici bazal başlatır."],
+   ["BASAL 0.3 20","Evet","0.3 U/saat, 20 dk geçici bazal başlatır."],
+   ["BASAL 30%","Evet","%30 oranında, 30 dk geçici bazal başlatır."],
+   ["BASAL 30% 50","Evet","%30 oranında, 50 dk geçici bazal başlatır."],
+   ["BASAL STOP/CANCEL","Evet","Geçici bazalı durdurur."]
+ ]},
+ {title:"🔁 Döngü (Loop)", color:"#2e7d32", items:[
+   ["LOOP STATUS","Hayır","Loop'un anlık durumunu gösterir."],
+   ["LOOP STOP/DISABLE","Evet","Loop'u devre dışı bırakır."],
+   ["LOOP START/ENABLE","Evet","Loop'u etkinleştirir."],
+   ["LOOP SUSPEND 20","Evet","Loop'u 20 dk askıya alır."],
+   ["LOOP RESUME","Evet","Askıyı erken bitirir."],
+   ["LOOP CLOSED","Evet","Modu Kapalı Döngü yapar."],
+   ["LOOP LGS","Evet","Modu Düşük Glukozda Askıya Alma yapar."]
+ ]},
+ {title:"💉 Bolus", color:"#c62828", items:[
+   ["BOLUS 1.2","Evet","1.2 ünite bolus verir. Son bolustan 15 dk geçmeliydi."],
+   ["BOLUS 0.60 MEAL","Evet","0.6 ünite bolus + Yakında Yemek hedefini ayarlar."],
+   ["CARBS 5","Evet","Bolussuz 5g karbonhidrat girer."],
+   ["CARBS 5 17:35","Evet","Belirtilen saatte 5g karbonhidrat girer."],
+   ["EXTENDED 2 120","Evet","2 üniteyi 120 dk'ya yayılı extended bolus başlatır."],
+   ["EXTENDED STOP/CANCEL","Evet","Extended bolusu durdurur."]
+ ]},
+ {title:"📋 Profil", color:"#6a1b9a", items:[
+   ["PROFILE STATUS","Hayır","Aktif profili ve yüzdesini gösterir."],
+   ["PROFILE LIST","Hayır","Tüm profilleri numaralı listeler."],
+   ["PROFILE 1","Evet","Listedeki 1. profile geçer."],
+   ["PROFILE 2 30","Evet","2. profile %30 oranıyla geçer."]
+ ]},
+ {title:"🎯 Geçici Hedef", color:"#00838f", items:[
+   ["TARGET MEAL/ACTIVITY/HYPO","Evet","İlgili geçici hedefi ayarlar."],
+   ["TARGET STOP/CANCEL","Evet","Geçici hedefi iptal eder."]
+ ]},
+ {title:"🔧 Diğer", color:"#757575", items:[
+   ["TREATMENTS REFRESH","Hayır","Nightscout'tan verileri yeniler."],
+   ["AAPSCLIENT RESTART","Hayır","AAPSClient/Nightscout iletişimini yeniden başlatır."],
+   ["RESTART","Hayır","AAPS'i yeniden başlatır."],
+   ["SMS DISABLE/STOP","Hayır","SMS servisini kapatır (yalnızca ana telefondan açılır!)."],
+   ["HELP","Hayır","Tüm komut kategorilerini listeler."]
+ ]}
+];
+function renderSmsCommands(){
+  const wrap = document.getElementById("sms-list");
+  wrap.innerHTML = smsGroups.map(g=>`
+    <div class="sms-group">
+      <div class="sms-group-h" style="background:${g.color}">${g.title}</div>
+      ${g.items.map(it=>`
+        <div class="sms-row">
+          <code>${it[0]}</code>
+          <span class="tag ${it[1]==='Evet'?'auth':'noauth'}">${it[1]==='Evet'?'KOD GEREKİR':'DOĞRUDAN'}</span>
+          <p>${it[2]}</p>
+        </div>
+      `).join("")}
+    </div>
+  `).join("");
 }
 
-function confirmDeleteFood(){
- const group=document.getElementById("deleteGroup").value;
- const index=document.getElementById("deleteFood").value;
- if(index==="")return;
-
- const pass=prompt("Silmek için şifre girin");
- if(pass!==ADMIN_PASSWORD){
-   alert("Şifre yanlış");
-   return;
- }
-
- foods[group].splice(index,1);
- saveFoods();
- alert("Silindi");
+/* =========================================================
+   DERS PROGRAMI
+   ========================================================= */
+function renderSchedule(){
+  const img = document.getElementById("schedule-img");
+  const empty = document.getElementById("schedule-empty");
+  if(settings.scheduleImage){
+    img.src = settings.scheduleImage;
+    img.style.display = "block";
+    empty.style.display = "none";
+  } else {
+    img.style.display = "none";
+    empty.style.display = "block";
+  }
+}
+function saveScheduleImage(){
+  const file = document.getElementById("schedule-file").files[0];
+  if(!file){ alert("Bir resim seçin"); return; }
+  const pass = prompt("Kaydetmek için şifre girin");
+  if(pass !== ADMIN_PASSWORD){ alert("Şifre yanlış"); return; }
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    settings.scheduleImage = reader.result;
+    saveSettings();
+    renderSchedule();
+    alert("Kaydedildi");
+  };
+  reader.readAsDataURL(file);
+}
+function removeScheduleImage(){
+  const pass = prompt("Kaldırmak için şifre girin");
+  if(pass !== ADMIN_PASSWORD){ alert("Şifre yanlış"); return; }
+  delete settings.scheduleImage;
+  saveSettings();
+  renderSchedule();
 }
 
+/* =========================================================
+   ZAMANLAYICI + ALARM
+   ========================================================= */
+let timerSeconds = 0, timerInterval = null, alarmInterval = null, audioCtx = null;
 
-// OFFLINE
-if("serviceWorker" in navigator){
- const swCode=`
-  self.addEventListener('install',e=>{
-    e.waitUntil(caches.open('metematik-v2').then(c=>c.addAll(['./'])));
+function updateTimerDisplay(){
+  const m = Math.floor(timerSeconds/60), s = timerSeconds%60;
+  document.getElementById("timer-display").textContent =
+    String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+}
+function updateTimerMinutesFromSugar(){
+  const input = document.getElementById("timer-minutes");
+  const hint = document.getElementById("timer-hint");
+  if(document.activeElement === input) return; // kullanıcı düzenliyorsa dokunma
+  if(lastSgv===null){ hint.textContent = "Şeker verisi bekleniyor…"; return; }
+  const mins = Math.max(1, Math.floor(lastSgv/10));
+  input.value = mins;
+  hint.textContent = `Şekere göre otomatik: ${lastSgv} → ${mins} dk. İsterseniz değiştirin.`;
+}
+document.getElementById("timer-minutes").addEventListener("focus", ()=>{
+  document.getElementById("timer-hint").textContent = "Özel dakika girebilirsiniz";
+});
+document.getElementById("timer-minutes").addEventListener("blur", updateTimerMinutesFromSugar);
+
+function ensureAudio(){
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==="suspended") audioCtx.resume();
+}
+function beepOnce(){
+  if(!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = "sine"; osc.frequency.value = 880;
+  gain.gain.value = 0.25;
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.35);
+}
+function ringAlarm(){
+  document.getElementById("timer-ring").style.display = "block";
+  beepOnce();
+  alarmInterval = setInterval(beepOnce, 700);
+  if(navigator.vibrate) navigator.vibrate([300,150,300,150,300]);
+}
+function stopAlarm(){
+  clearInterval(alarmInterval); alarmInterval=null;
+  document.getElementById("timer-ring").style.display = "none";
+}
+
+function startTimer(){
+  ensureAudio();
+  if(timerInterval) return;
+  if(timerSeconds<=0){
+    const mins = parseFloat(document.getElementById("timer-minutes").value);
+    if(!mins || mins<=0) return;
+    timerSeconds = Math.round(mins*60);
+  }
+  updateTimerDisplay();
+  timerInterval = setInterval(()=>{
+    timerSeconds--;
+    updateTimerDisplay();
+    if(timerSeconds<=0){
+      clearInterval(timerInterval); timerInterval=null;
+      ringAlarm();
+    }
+  },1000);
+}
+function pauseTimer(){ clearInterval(timerInterval); timerInterval=null; }
+function resetTimer(){
+  pauseTimer(); stopAlarm(); timerSeconds=0; updateTimerDisplay();
+  updateTimerMinutesFromSugar();
+}
+
+/* =========================================================
+   AI YEMEK ARAMA
+   ========================================================= */
+function fileToBase64(file){
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onload = ()=>res(r.result.split(",")[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
   });
-  self.addEventListener('fetch',e=>{
-    e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));
-  });`;
- const blob=new Blob([swCode],{type:'text/javascript'});
- const swURL=URL.createObjectURL(blob);
- navigator.serviceWorker.register(swURL);
+}
+async function runAiSearch(){
+  const statusEl = document.getElementById("ai-status");
+  const name = document.getElementById("ai-name").value.trim();
+  const photoFile = document.getElementById("ai-photo").files[0];
+  const provider = settings.aiProvider || "anthropic";
+  if(!settings.aiKey){ statusEl.textContent = "Önce Ayarlar > AI API Anahtarı girin."; return; }
+  if(!name && !photoFile){ statusEl.textContent = "Yemek adı yazın veya fotoğraf yükleyin."; return; }
+
+  statusEl.textContent = "Aranıyor…";
+  document.getElementById("ai-result").style.display = "none";
+
+  const prompt = `Bir diyabet karbonhidrat sayım uygulaması için çalışıyorsun. `+
+    `${name ? `Yemeğin adı: "${name}". ` : ""}`+
+    `${photoFile ? "Fotoğraftaki yemeği tanı. " : ""}`+
+    `Sadece şu JSON formatında yanıt ver, başka hiçbir açıklama ekleme:\n`+
+    `{"name":"yemek adı (Türkçe)","type":"gram" veya "adet","carbPer100g":sayı (type gram ise) ,"carbPerUnit":sayı (type adet ise)}`;
+
+  try{
+    let text;
+    if(provider === "openai"){
+      const content = [{type:"text", text: prompt}];
+      if(photoFile){
+        const b64 = await fileToBase64(photoFile);
+        content.push({type:"image_url", image_url:{url:`data:${photoFile.type};base64,${b64}`}});
+      }
+      const res = await fetch("https://api.openai.com/v1/chat/completions",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","Authorization":"Bearer "+settings.aiKey},
+        body: JSON.stringify({model:"gpt-4o-mini", max_tokens:300, messages:[{role:"user", content}]})
+      });
+      const data = await res.json();
+      if(data.error) throw new Error(data.error.message);
+      text = data.choices[0].message.content;
+    } else if(provider === "gemini"){
+      const parts = [{text: prompt}];
+      if(photoFile){
+        const b64 = await fileToBase64(photoFile);
+        parts.push({inline_data:{mime_type:photoFile.type, data:b64}});
+      }
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${settings.aiKey}`,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({contents:[{parts}]})
+      });
+      const data = await res.json();
+      if(data.error) throw new Error(data.error.message);
+      text = data.candidates[0].content.parts[0].text;
+    } else {
+      const content = [{type:"text", text: prompt}];
+      if(photoFile){
+        const b64 = await fileToBase64(photoFile);
+        content.unshift({type:"image", source:{type:"base64", media_type:photoFile.type, data:b64}});
+      }
+      const res = await fetch("https://api.anthropic.com/v1/messages",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-api-key": settings.aiKey,
+          "anthropic-version":"2023-06-01",
+          "anthropic-dangerous-direct-browser-access":"true"
+        },
+        body: JSON.stringify({model:"claude-sonnet-4-6", max_tokens:300, messages:[{role:"user", content}]})
+      });
+      const data = await res.json();
+      if(data.error) throw new Error(data.error.message);
+      text = data.content.map(c=>c.text||"").join("");
+    }
+
+    const clean = text.replace(/```json|```/g,"").trim();
+    const parsed = JSON.parse(clean);
+    aiFoodResult = parsed;
+    document.getElementById("ai-result-name").textContent = parsed.name;
+    document.getElementById("ai-result-basis").textContent =
+      parsed.type==="gram" ? `Tahmini: 100g = ${parsed.carbPer100g}g KH` : `Tahmini: 1 adet = ${parsed.carbPerUnit}g KH`;
+    document.getElementById("ai-result").style.display = "block";
+    statusEl.textContent = "";
+    updateAiTotal();
+  }catch(e){
+    statusEl.textContent = "Bulunamadı / hata: " + e.message;
+  }
+}
+function updateAiTotal(){
+  if(!aiFoodResult) return;
+  const amount = parseFloat(document.getElementById("ai-result-amount").value) || 0;
+  const total = aiFoodResult.type==="gram"
+    ? amount * (aiFoodResult.carbPer100g/100)
+    : amount * aiFoodResult.carbPerUnit;
+  document.getElementById("ai-result-total").textContent = "Toplam: " + Math.round(total) + " g karbonhidrat";
+}
+function addAiFoodToList(){
+  if(!aiFoodResult) return;
+  const food = {name: aiFoodResult.name, type: aiFoodResult.type};
+  if(aiFoodResult.type==="gram") food.carbPerGram = aiFoodResult.carbPer100g/100;
+  else food.carbPerUnit = aiFoodResult.carbPerUnit;
+  foods.push(food);
+  saveFoods();
+  selectFood(foods.length-1);
+  const amount = document.getElementById("ai-result-amount").value;
+  if(amount) document.getElementById("amount-input").value = amount;
+  calculate();
+  closeModal("aiModal");
 }
 
+/* =========================================================
+   BAŞLANGIÇ DURUMU
+   ========================================================= */
+document.getElementById("home-ai-provider").value = settings.aiProvider || "anthropic";
+updateTimerMinutesFromSugar();
+
+/* =========================================================
+   OFFLINE (PWA)
+   ========================================================= */
+if("serviceWorker" in navigator){
+  const swCode = `
+    self.addEventListener('install',e=>{
+      e.waitUntil(caches.open('metematik-v5').then(c=>c.addAll(['./'])));
+    });
+    self.addEventListener('fetch',e=>{
+      e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));
+    });`;
+  const blob = new Blob([swCode], {type:'text/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob));
+}
 </script>
 </body>
 </html>
