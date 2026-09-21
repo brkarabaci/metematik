@@ -408,7 +408,7 @@ select:focus,input:focus{border-color:var(--accent); background:#fff; outline:no
    VERİ
    ========================================================= */
 const ADMIN_PASSWORD = "omurmete";
-const NS_URL = "https://mete.10be.de";
+const NS_URL = "https://mete.ns.10be.de";
 
 const defaultFoods = [
  {name:"Pide",type:"gram",carbPerGram:0.4},
@@ -725,6 +725,7 @@ const trendArrow = {
 async function loadNightscout(){
   try{
     const res = await fetch(`${NS_URL}/api/v1/entries/sgv.json?count=24`);
+    if(!res.ok){ document.getElementById("ns-meta").textContent = `Sunucu hatası (${res.status})`; console.error("NS sgv fetch failed", res.status, res.statusText); return; }
     const data = await res.json();
     if(!data.length){ document.getElementById("ns-meta").textContent="Veri yok"; return; }
     const last = data[0];
@@ -736,7 +737,8 @@ async function loadNightscout(){
     drawSpark(data.slice().reverse().map(d=>d.sgv));
     updateTimerMinutesFromSugar();
   }catch(e){
-    document.getElementById("ns-meta").textContent = "Bağlanılamadı";
+    document.getElementById("ns-meta").textContent = "Bağlanılamadı (" + e.message + ")";
+    console.error("NS sgv fetch error", e);
   }
 }
 function drawSpark(values){
@@ -758,6 +760,7 @@ const PUMP_EVENTS = ["Site Change","Cannula Change","Pump Site Change"];
 async function loadNightscoutEvents(){
   try{
     const res = await fetch(`${NS_URL}/api/v1/treatments.json?count=200`);
+    if(!res.ok){ console.error("NS treatments fetch failed", res.status, res.statusText); nsSensorStart=null; nsPumpStart=null; renderTrackingStatus(); return; }
     const data = await res.json();
     let sTime = null, pTime = null;
     data.forEach(t=>{
