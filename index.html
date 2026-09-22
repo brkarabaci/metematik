@@ -273,7 +273,7 @@ select:focus,input:focus{border-color:var(--accent); background:#fff; outline:no
     <button class="close-x" onclick="closeModal('scheduleModal')">✕</button>
     <h3>📅 Mete'nin Ders Programı</h3>
     <div id="schedule-empty">Henüz bir ders programı resmi yüklenmedi.</div>
-    <img id="schedule-img" onclick="openScheduleLightbox()">
+    <img id="schedule-img">
     <div class="hint" id="schedule-hint">Büyütmek için resme dokunun</div>
     <label>Yeni resim yükle / değiştir</label>
     <input id="schedule-file" type="file" accept="image/*">
@@ -363,6 +363,13 @@ const defaultFavorites = ["Ekmek","Makarna","Pilav","Pide","Simit","Patates Kzrt
 
 let foods = JSON.parse(localStorage.getItem("foods_v2")) || defaultFoods;
 let favorites = JSON.parse(localStorage.getItem("favorites_v2")) || defaultFavorites;
+// Önceki sürümlerde kaydedilmiş 10'luk favori listesini yeni varsayılanlardan tamamla (mevcut seçimleri korur)
+if(favorites.length < 15){
+  defaultFavorites.forEach(name=>{
+    if(favorites.length < 15 && !favorites.includes(name)) favorites.push(name);
+  });
+  localStorage.setItem("favorites_v2", JSON.stringify(favorites));
+}
 let settings = JSON.parse(localStorage.getItem("mm_settings")) || {};
 let menu = JSON.parse(localStorage.getItem("current_menu_v1")) || [];
 let selectedFoodIndex = null;
@@ -763,6 +770,22 @@ function openScheduleLightbox(){
   });
 }
 
+// Android tarayıcılarda tek "click" olayının bazen tetiklenmemesi ihtimaline karşı
+// hem click hem touchend ile bağlanıp, çift açılmayı zaman aşımıyla engelliyoruz.
+(function bindScheduleImageOpen(){
+  const img = document.getElementById("schedule-img");
+  if(!img) return;
+  let lastOpen = 0;
+  const trigger = ()=>{
+    const now = Date.now();
+    if(now - lastOpen < 500) return;
+    lastOpen = now;
+    try{ openScheduleLightbox(); }catch(e){ console.error("schedule lightbox error", e); }
+  };
+  img.addEventListener("click", trigger);
+  img.addEventListener("touchend", (e)=>{ e.preventDefault(); trigger(); }, {passive:false});
+})();
+
 /* =========================================================
    YEMEK ARA (internet, anahtarsız)
    ========================================================= */
@@ -803,7 +826,7 @@ function addFoundFoodToList(){
    ========================================================= */
 if("serviceWorker" in navigator){
   const swCode = `
-    const CACHE_NAME = 'metematik-v8';
+    const CACHE_NAME = 'metematik-v9';
     self.addEventListener('install', e=>{
       self.skipWaiting();
       e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(['./'])));
